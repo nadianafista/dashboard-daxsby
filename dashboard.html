@@ -1,0 +1,4907 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Laporan</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f9;
+}
+
+.home-card .chart-container{
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.home-dashboard{
+    margin-top:5px;
+}
+
+/* TITLE */
+.home-title{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:10px;
+    padding-bottom:8px;
+    border-bottom:2px solid #4e6b50;
+    color:#4e6b50;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;  
+    grid-template-rows: auto auto auto; 
+    grid-template-areas: 
+        "kpi kpi kpi kpi"
+        "hbar vbar line line"
+        "hbar vbar stack stack";  
+    gap: 16px;
+    background: rgba(78, 107, 80, 0.15);
+    padding: 12px 12px 1px 12px;
+    border-radius: 16px;
+    min-height: 100px;
+    align-content: stretch;
+    height: fit-content;
+}
+
+.home-card {
+    background: rgba(255, 255, 255, 0.9); 
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    font-size: 14px;
+    color: #4e6b50;
+    padding: 16px;
+    height: 100%;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease; 
+}
+.home-card.stack {
+    grid-row: 2;
+    margin-top: 242px;
+}
+.home-card:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.home-dashboard{
+    margin-top:15px;
+}
+
+.home-dashboard .dashboard-title{
+    font-size:18px;
+    font-weight:600;
+    margin-top: -1px;
+    margin-bottom:0;
+    padding-bottom:0;
+    border-bottom:none;
+    color:#4e6b50;
+}
+
+/* AREA */
+.kpi{
+    grid-area:kpi;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+.home-kpi-wrapper{
+    display:flex;
+    gap:20px;
+    width:100%;
+    height:100%;
+}
+
+.home-kpi-box{
+    flex:1;
+    min-height:0;
+    background:linear-gradient(145deg,#ffffff,#f4f6f7);
+    border-radius:14px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition:0.25s;
+    height: 120px;
+}
+
+.home-kpi-box:hover{
+    transform:translateY(-3px);
+}
+
+.home-kpi-box .kpi-value{
+    font-size:35px;
+    font-weight:700;
+    color:#2e5d3f;
+    margin-top:3px;
+}
+
+.home-split-vertical{
+    display:grid;
+    grid-template-rows: auto auto; /* ⬅️ ini kunci */
+    gap:16px;
+    align-content: flex-start; /* biar ga stretch full */
+}
+
+/* ===== HOVER EFFECT KHUSUS CHART HOME ===== */
+.home-chart-box {
+    transition: all 0.25s ease;
+}
+
+.home-chart-box:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.hbar{
+    grid-area:hbar;
+} 
+
+.vbar{
+    grid-area:vbar;
+}
+
+.line{
+    grid-area:line;
+}
+
+.stack{
+    grid-area:stack;
+}
+
+.line,
+.stack {
+    max-height: 226px;
+}
+
+/* ================= DASHBOARD CHART ================= */
+.dashboard-wrapper{
+    padding-top:0px;
+    height:calc(100vh - 40px);
+    display:flex;
+    flex-direction:column;
+}
+
+.dashboard-title{
+    font-size:18px;
+    font-weight:600;
+    margin-top:-15px;
+    margin-bottom:12px;
+    padding-bottom:8px;
+    border-bottom:2px solid #4e6b50;
+    color:#4e6b50;
+}
+
+/* .btn-export {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 13px;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    height: 30px;               
+    display: flex;
+    align-items: center;      
+}  */
+
+.dashboard-grid{
+    display:grid;
+
+    grid-template-columns: 0.6fr 1.6fr 0.7fr;
+
+    grid-template-rows: 1fr 1fr;
+
+    height:100%;
+
+    grid-template-areas:
+        "kpi produk pie"
+        "kpi hbar   pie";
+
+    gap:20px;
+}
+
+.chart-kpi{
+    grid-area:kpi;
+    grid-row:1 / span 2;
+    max-height:100%;
+}
+
+.chart-produk{
+    grid-area:produk;
+}
+
+.chart-week{
+    grid-area:week;
+}
+
+.chart-horizontal{
+    grid-area:hbar;
+}
+
+.chart-pie{
+    grid-area:pie;
+}
+
+.chart-pie .vertical-wrapper{
+    display:grid;
+    grid-template-columns: 1fr; /* ⬅️ jadi 1 kolom */
+    grid-template-rows: 1fr 1fr; /* ⬅️ jadi 2 baris */
+}
+
+.chart-card{
+    height:100%;
+    width:100%;
+    background:rgba(78,107,80,0.15);
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-start;
+    font-size:14px;
+    color:#4e6b50;
+    text-align:center;
+    padding:20px;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.08),
+        0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.25s ease;
+}
+
+.chart-card:hover{
+    transform:translateY(-3px);
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.12);
+}
+
+.chart-kpi{
+    grid-row:1 / span 2;
+}
+
+.kpi-wrapper{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:100%;
+    height:100%;
+}
+
+.kpi-box{
+    flex:0 0 calc(33.33% - 8px);
+    min-height:0;
+    background:linear-gradient(145deg,#ffffff,#f4f6f7);
+    border-radius:14px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition:0.25s;
+}
+
+.kpi-box:hover{
+    transform:translateY(-3px);
+}
+
+.kpi-title{
+    font-size:10px;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    color:#4e6b50; /* 🔥 jadi hijau */
+    font-weight:600; /* biar lebih tegas */
+}
+
+.kpi-value{
+    font-size:35px;
+    font-weight:700;
+    color:#2e5d3f;
+    margin-top:3p
+}
+
+.chart-vertical{
+    padding:18px;
+}
+
+.vertical-wrapper{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    width:100%;
+    height:100%;
+    align-items:stretch; /* ⬅️ penting */
+}
+
+.chart-container{
+    flex:1;
+    background:#ffffff;
+    border-radius:12px;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    justify-content: space-between;
+}
+
+.chart-title{
+    font-size:13px;
+    font-weight:600;
+    color:#4e6b50;
+    margin-bottom:10px;
+    text-align:center; /* 🔥 ini kuncinya */
+}
+
+.chart-box{
+    position:relative;
+    width:100%;
+    height: 220px;
+    max-height: 220px; /* ⬅️ FIX biar ga collapse sebelum chart load */
+}
+.chart-box {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.home-dashboard .chart-box {
+    height: 170px;
+    max-height: 170px;
+}
+
+.chart-container canvas{
+    width:100% !important;
+    height:100% !important;
+}
+
+.chart-empty{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    font-size:14px;
+    color:#888;
+    font-style:italic;
+}
+
+.chart-horizontal{
+    grid-column:2;
+    grid-row:2;
+}
+
+.chart-pie {
+    grid-row: 1 / span 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-pie .chart-box{
+    width: 100%;
+    height: 225px; /* lebih gede */
+    max-width: none;
+    max-height: none;
+    margin:auto;
+}
+
+
+.chart-pie canvas{
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-vertical,
+.chart-horizontal,
+.chart-pie{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #4e6b50, #3f5741);
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.3s;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.menu {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.menu li:not(:last-child) {
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+}
+
+.menu a {
+    display: block;
+    padding: 12px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.menu a:hover {
+    background-color: rgba(255,255,255,0.15);
+    transform: translateX(6px);
+}
+
+.menu a.active {
+    background: rgba(255,255,255,0.25);
+}
+
+/* Garis indikator aktif kiri */
+.menu a.active::before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    background: white;
+    border-radius: 3px;
+}
+
+/* ================= SIDEBAR BUTTON ================= */
+.sidebar-bottom {
+    margin-top: 20px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn-blue {
+    background: #4e73df;
+    color: white;
+}
+
+.btn-blue:hover {
+    background: #2e59d9;
+}
+
+.btn-red {
+    background: #ff4d4d;
+    color: white;
+}
+
+.btn-red:hover {
+    background: #e60000;
+}
+
+.btn-orange {
+    background: #ff914d;
+    color: white;
+}
+
+.btn-orange:hover {
+    background: #ff6f00;
+}
+
+/* ================= MAIN CONTENT ================= */
+.main {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-top:90px; 
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #4e6b50;
+}
+
+/* ================= HEADER + BUTTON ================= */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-buttons button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: 0.3s;
+}
+
+.save {
+    background: #4e73df;
+    color: white;
+}
+
+.save:hover {
+    background: #2e59d9;
+}
+
+.add {
+    background: #ff914d;
+    color: white;
+}
+
+.add:hover {
+    background: #ff6f00;
+}
+
+/* ================= BULAN ================= */
+.months {
+    margin: 15px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px; 
+    font-size: 13px; 
+    color: #666;
+}
+
+.months span:hover {
+    color: #4e6b50;
+    font-weight: bold;
+}
+
+.months span {
+    cursor: pointer;
+    padding: 3px 8px;   
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap; 
+}
+
+.months span:hover {
+    color: #4e6b50;
+}
+
+.months span.active-month {
+    font-weight: 600;
+    color: #4e6b50;
+    background-color: rgba(78,107,80,0.15);
+}
+
+/* ================= TABLE ================= */
+.table-container {
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    overflow: auto; 
+    max-height: 530px;
+    background: white;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 6px;   
+    height: 6px;  
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #4e6b50;
+    border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+table {
+    width: max-content;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 100%;
+}
+
+thead {
+    background: #4e6b50;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    white-space: nowrap;
+}
+
+tbody tr:hover {
+    background-color: #f2f7f2;
+    transition: 0.2s;
+}
+
+/* Zebra effect */
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+}
+
+/* ================= TAMBAH DATA ================= */
+.edit-btn {
+    background: #e29735;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 18px; 
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    background: #e18a19; 
+    transform: translateY(-2px);
+}
+
+.edit-btn:active {
+    transform: scale(0.95);
+}
+
+/* ================= TAMBAH DATA ================= */
+.add-btn {
+    background: #61adfd;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 18px; 
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+    background: #1074e0; /* diperbaiki */
+    transform: translateY(-2px);
+}
+
+.add-btn:active {
+    transform: scale(0.95);
+}
+
+
+/* ================= SIMPAN DATA ================= */
+.save-btn {
+    background: #4fcb6e;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 18px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    background: rgb(35, 165, 50);
+    transform: translateY(-2px);
+}
+
+.save-btn:active {
+    transform: scale(0.95);
+}
+
+.save-btn.loading {
+    background: #999;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.save-btn.loading::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border: 2px solid white;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: spin 0.7s linear infinite;
+}
+.btn-blue-small {
+    background: #4e73df;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 18px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-blue-small:hover {
+    background: #2e59d9;
+    transform: translateY(-2px);
+}
+/* ================= BATAL ================= */
+.cancel-btn {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 8px 14px;   /* samakan */
+    border-radius: 18px; /* samakan */
+    font-size: 12px;     /* samakan */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+}
+
+.cancel-btn:active {
+    transform: scale(0.95);
+}
+
+/* ================= SPINNER ================= */
+@keyframes spin {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Wrapper */
+.save-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Box */
+.save-menu {
+    position: absolute;
+    right: 0;
+    top: 42px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    overflow: hidden;
+    min-width: 190px;
+    display: none;
+    transform: translateY(-8px);
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: 999;
+}
+
+/* Saat aktif */
+.save-menu.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Opsi */
+.save-option {
+    padding: 9px 14px;
+    font-size: 12px; /* diperkecil */
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hover efek */
+.save-option:hover {
+    background: #e8f2ff;   /* biru soft */
+    color: #0d6efd;        /* biru pekat */
+    padding-left: 18px;    /* efek geser */
+}
+
+/* Divider */
+.save-divider {
+    height: 1px;
+    background: #eee;
+}
+
+/* ================= STICKY KOLOM NO ================= */
+
+/* Body kolom No */
+#dataTable td:first-child {
+    position: sticky;
+    left: 0;
+    background: #ffffff;
+    z-index: 2;
+    border-right: 1px solid #e0e0e0;
+}
+
+/* Header kolom No */
+#dataTable th:first-child {
+    position: sticky;
+    left: 0;
+    background: #4e6b50; 
+    z-index: 4;
+    border-right: 1px solid #e0e0e0;
+}
+
+.delete-pic-btn{
+    color:red;
+    font-weight:bold;
+    margin-left:10px;
+    cursor:pointer;
+}
+
+.delete-pic-btn:hover{
+    transform:scale(1.2);
+}
+
+.modal{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-content{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:300px;
+}
+
+/* OVERLAY BACKGROUND */
+.modal-overlay{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+/* POPUP BOX */
+.modal-box{
+
+    background:#ffffff;
+    width:360px;
+    padding:30px;
+
+    border-radius:14px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+
+    animation:popupFade 0.25s ease;
+}
+
+.modal-box h2{
+    margin-bottom:18px;
+    font-size:22px;
+}
+
+/* LABEL */
+.modal-box label{
+    font-size:14px;
+    font-weight:600;
+    display:block;
+    margin-top:10px;
+    margin-bottom:6px;
+}
+
+/* INPUT */
+.modal-box input{
+
+    width:100%;
+    padding:10px;
+
+    border-radius:6px;
+    border:1px solid #ccc;
+
+    font-size:14px;
+}
+
+/* BUTTON CONTAINER */
+.modal-buttons{
+
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+
+    margin-top:22px;
+}
+
+/* BUTTON STYLE */
+.btn-cancel{
+
+    padding:8px 16px;
+    border-radius:8px;
+    border:none;
+    color: white;
+    background:#e53935;
+    cursor:pointer;
+}
+
+.btn-add{
+
+    padding:8px 18px;
+    border-radius:8px;
+    border:none;
+
+    background:#4f9df7;
+    color:white;
+    cursor:pointer;
+}
+
+.btn-add:hover{
+    background:#3b86db;
+}
+
+.btn-cancel:hover{
+    background:#c62828;
+}
+
+@keyframes popupFade{
+
+    from{
+        transform:scale(0.9);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+</style>
+</head>
+
+<!-- ================= MODAL TAMBAH DATA ================= -->
+<div id="addModal" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.4);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+background:white;
+padding:25px;
+width:500px;
+max-height:90vh;
+overflow:auto;
+border-radius:12px;
+">
+
+<h3 style="margin-bottom:15px;">Tambah Data Baru</h3>
+
+<div id="formContainer"></div>
+<input type="file" id="excelFile" accept=".xlsx" style="display:none;">
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+    
+    <button onclick="closeAddModal()" class="cancel-btn">
+        Batal
+    </button>
+
+    <button onclick="openExcelImport()" class="btn-blue-small">
+        Integrasi Excel
+    </button>
+
+    <button onclick="submitData()" class="save-btn">
+        Simpan
+    </button>
+
+</div>
+
+</div>
+</div>
+
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<div id="modalOverlay" class="modal-overlay">
+  
+  <div class="modal-box">
+
+    <h2>Tambah Anggota</h2>
+
+    <label>Nama Lengkap</label>
+    <input type="text" id="memberFullName" placeholder="Masukkan nama lengkap">
+
+    <label>Nama Panggilan (Sidebar)</label>
+    <input type="text" id="memberNick" placeholder="Contoh: Nadia">
+
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeAddMemberModal()">Batal</button>
+      <button class="btn-add" onclick="submitNewMember()">Tambah</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= ADD MEMBER ================= -->
+<div id="addMemberModal" class="modal">
+    <div class="modal-content">
+
+        <h3>Tambah Anggota</h3>
+
+        <div style="margin-bottom:10px">
+            <label>Nama Lengkap</label>
+            <input type="text" id="memberFullName" style="width:100%">
+        </div>
+
+        <div style="margin-bottom:10px">
+            <label>Nama Panggilan (Sidebar)</label>
+            <input type="text" id="memberNick" style="width:100%">
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button onclick="closeAddMemberModal()">Batal</button>
+            <button onclick="submitNewMember()" class="add-btn">Tambah</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <div>
+        <h2>Menu</h2>
+        <ul class="menu">
+            <li><a href="#" onclick="loadPage('home', null, this)" class="active">Home</a></li>
+            <li><a href="#" onclick="loadPage('laporan','Ana', this)">Ana</a></li>
+            <li><a href="#" onclick="loadPage('laporan','Kevin', this)">Kevin</a></li>
+            <li><a href="#" onclick="loadPage('laporan','Arif', this)">Arif</a></li>
+        </ul>
+    </div>
+
+    <div class="sidebar-bottom">
+        <button class="btn btn-blue" onclick="resetAllData()">Reset Data</button>
+        <button class="btn btn-red" onclick="toggleDeleteMode()">Hapus Anggota</button>
+        <button class="btn btn-orange" onclick="openAddMemberModal()">Tambah Anggota</button>
+    </div>
+</div>
+
+<!-- ================= MAIN ================= -->
+<div class="main" id="mainContent"></div>
+<script>
+
+let dataCache = {};
+let globalMonth = "All";
+let currentMonth = null;
+let isEditMode = false;
+let deleteMode = false;
+let produkChart = null;
+let weekChart = null;
+let regionChart = null;
+
+const EXPECTED_COLUMNS = [
+    "crc",
+    "Nama",
+    "Region",
+    "Sektor",
+    "Status",
+    "Tanggal contact",
+    "Source Data",
+    "No Telp",
+    "Produk",
+    "Progress"
+];
+
+let currentName = null;
+
+const months = [
+    "Januari","Februari","Maret","April","Mei","Juni",
+    "Juli","Agustus","September","Oktober","November","Desember"
+];
+
+async function preloadAllMonths() {
+
+    if (!currentName) return;
+
+    const promises = months.map(async (month) => {
+
+        const key = `${currentName}_${month}`;
+
+        if (dataCache[key]) return;
+
+        try {
+
+            const response = await fetch(
+                `${WEB_APP_URL}?bulan=${month}&pic=${currentName}`
+            );
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                dataCache[key] = result.data;
+            } else {
+                dataCache[key] = [];
+            }
+
+        } catch (err) {
+            console.error("Preload error:", month, err);
+            dataCache[key] = [];
+        }
+
+    });
+
+    await Promise.all(promises);
+
+    updateKPI();
+    updateSuccessRate();
+    updateProdukChart();
+    updateWeekChart();
+    updateRegionChart();
+    updateSektorChart();
+    updatePieSourceChart();
+    updateTreemapWilayahSektor();
+    updateSektorDominasiChart();
+    updateProdukDominasiChart();
+    updateWilayahChart();
+    updatePerformaSalesChart();
+    console.log("Semua bulan selesai preload");
+}
+
+async function preloadAllSalesAllMonths() {
+
+    const salesList = getAllSalesNames();
+
+    const promises = [];
+
+    salesList.forEach(name => {
+
+        months.forEach(month => {
+
+            const key = `${name}_${month}`;
+
+            if (dataCache[key]) return;
+
+            promises.push(
+                fetch(`${WEB_APP_URL}?bulan=${month}&pic=${name}`)
+                    .then(res => res.json())
+                    .then(result => {
+                        if (result.status === "success") {
+                            dataCache[key] = result.data;
+                        } else {
+                            dataCache[key] = [];
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error preload:", name, month, err);
+                        dataCache[key] = [];
+                    })
+            );
+
+        });
+
+    });
+
+    await Promise.all(promises);
+
+    // 🔥 update chart setelah semua data siap
+    updateSektorDominasiChart();
+    updateProdukDominasiChart();
+    updateWilayahChart();
+    updatePerformaSalesChart();
+    updateMultiLineChart();
+    updateSourceStackedChart();
+    console.log("🔥 Semua data ALL SALES + ALL MONTH loaded");
+}
+
+function getAllSalesNames() {
+    return Array.from(document.querySelectorAll(".menu a"))
+        .map(a => a.textContent.trim())
+        .filter(name => name && name.toLowerCase() !== "home");
+}
+
+function changeGlobalMonth(){
+
+    const select = document.getElementById("globalMonthFilter");
+    globalMonth = select.value;
+
+    // reload semua chart home
+    updateHomeTotalProses();
+    updateHomeTotalLost();
+    updateHomeTotalLeads();
+    updateHomeTotalRegion();
+    updateMultiLineChart();
+    updateSektorDominasiChart();
+    updateProdukDominasiChart();
+    updateWilayahChart();
+    updatePerformaSalesChart();
+    updateSourceStackedChart();
+}
+
+// ================= LOAD PAGE =================
+function loadPage(page, name = null, el = null) {
+
+    const main = document.getElementById("mainContent");
+    const links = document.querySelectorAll(".menu a");
+
+    // reset active menu
+    links.forEach(link => link.classList.remove("active"));
+    if (el) el.classList.add("active");
+
+    // ================= HOME =================
+    if (page === "home") {
+        main.innerHTML = `
+            <div class="home-dashboard" style="margin-top:-15px;">
+
+                <div style="margin-bottom:15px;">
+
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+
+                        <div class="dashboard-title" style="margin-bottom:0;">
+                            Dashboard Utama Performa Sales
+                        </div>
+
+                        <select id="globalMonthFilter" onchange="changeGlobalMonth()" style="
+                            padding:6px 10px;
+                            border-radius:20px;
+                            border:1px solid #ccc;
+                            font-size:12px;
+                            cursor:pointer;
+                            color:#4e6b50;
+                        ">
+                            <option value="All">Semua Bulan</option>
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September">September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                        </select>
+
+                    </div>
+
+                    <!-- 🔥 GARIS FULL -->
+                    <div style="
+                        border-bottom:2px solid #4e6b50;
+                        margin-top:6px;
+                    "></div>
+
+                </div>
+
+                <div class="home-grid">
+
+                    <div class="home-card kpi">
+
+                        <div class="home-kpi-wrapper">
+
+                            <div class="home-kpi-box">
+                                <div class="kpi-title">Total Leads <b>Dalam Proses</b> Seluruh Sales</div>
+                                <div class="kpi-value" id="homeTotalProses">0</div>
+                            </div>
+
+                            <div class="home-kpi-box">
+                                <div class="kpi-title">Total Leads <b>Lost</b> Seluruh Sales</div>
+                                <div class="kpi-value" id="homeTotalLost">0</div>
+                            </div>
+
+                            <div class="home-kpi-box">
+                                <div class="kpi-title">Total <b>Leads</b> Seluruh Sales</div>
+                                <div class="kpi-value" id="homeTotalLeads">0</div>
+                            </div>
+
+                            <div class="home-kpi-box">
+                                <div class="kpi-title">Total <b>Wilayah</b> yang dijangkau</div>
+                                <div class="kpi-value" id="homeTotalRegion">0</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="home-split-vertical">
+
+                        <div class="home-split-vertical">
+
+                            <!-- CHART 1 -->
+                            <div class="chart-container home-chart-box">
+                                <div class="chart-title">
+                                    Dominasi Prospek yang Ditargetkan
+                                </div>
+                                <div class="chart-box" id="sektorDominasiContainer">
+                                    <canvas id="sektorDominasiChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- CHART 2 -->
+                            <div class="chart-container home-chart-box">
+                                <div class="chart-title">
+                                    Top Produk Mesin yang Ditawarkan
+                                </div>
+                                <div class="chart-box" id="produkDominasiContainer">
+                                    <canvas id="produkDominasiChart"></canvas>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="home-split-vertical">
+
+                        <div class="home-split-vertical">
+
+                            <!-- CHART 1 -->
+                            <div class="chart-container home-chart-box">
+                                <div class="chart-title">
+                                    Top 5 Wilayah Terbanyak dalam Leads
+                                </div>
+                                <div class="chart-box chart-fade" id="wilayahContainer">
+                                    <canvas id="wilayahChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- CHART 2 -->
+                            <div class="chart-container home-chart-box">
+                                <div class="chart-title">
+                                    Performa Leads Sales
+                                </div>
+                                <div class="chart-box chart-fade" id="performaSalesContainer">
+                                    <canvas id="performaSalesChart"></canvas>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="home-card line">
+                        <div class="chart-title">
+                            Progress Sales Per-Minggu
+                        </div>
+                        <div class="chart-box" id="multiLineContainer">
+                            <canvas id="multiLineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="home-card stack">
+                        <div class="chart-title">
+                            Distribusi Sumber Leads per PIC
+                        </div>
+                        <div class="chart-box" id="horizontalStackedContainer"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        updateHomeTotalProses();
+        updateHomeTotalLost();
+        updateHomeTotalLeads();
+        updateHomeTotalRegion();
+
+        setTimeout(() => {
+            preloadAllSalesAllMonths();
+        }, 300);
+
+        setTimeout(() => {
+            const select = document.getElementById("globalMonthFilter");
+            if (select) {
+                select.value = globalMonth;
+            }
+        }, 0);
+        
+        return;
+    }
+
+    // ================= LAPORAN =================
+    currentName = name;
+
+    main.innerHTML = `
+
+        <!-- ================= DASHBOARD ================= -->
+        <div class="dashboard-wrapper">
+
+                <div class="dashboard-title">
+                    Dashboard Performa Sales Bulan Ini - ${name}
+                </div>
+
+            <div class="dashboard-grid">
+
+                <!-- KPI -->
+                <div class="chart-card chart-kpi">
+
+                    <div class="kpi-wrapper">
+
+                        <div class="kpi-box">
+                            <div class="kpi-title">Leads Dalam Proses</div>
+                            <div class="kpi-value" id="kpiProses">0</div>
+                        </div>
+
+                        <div class="kpi-box">
+                            <div class="kpi-title">Leads Lost</div>
+                            <div class="kpi-value" id="kpiLost">0</div>
+                        </div>
+
+                        <div class="kpi-box">
+                            <div class="kpi-title">Persentase Keberhasilan Sales</div>
+                            <div class="kpi-value" id="kpiSuccess">0%</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PRODUK -->
+                <div class="chart-card chart-vertical">
+
+                    <div class="vertical-wrapper">
+
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                Produk yang Paling Banyak Ditawarkan
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="produkChart"></canvas>
+
+                                <div id="produkEmpty" class="chart-empty" style="display:none;">
+                                    Data belum tersedia
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                Produktivitas Sales Per-Minggu
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="weekChart"></canvas>
+
+                                <div id="weekEmpty" class="chart-empty" style="display:none;">
+                                    Data belum tersedia
+                                </div>                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PIE + TREEMAP -->
+                <div class="chart-card chart-pie">
+
+                    <div class="vertical-wrapper">
+
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                Performa Source Data
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="pieSourceChart"></canvas>
+
+                                <div id="pieEmpty" class="chart-empty" style="display:none;">
+                                    Data belum tersedia
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                Dominasi Sektor dalam Wilayah
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="treemapChart"></canvas>
+
+                                <div id="treemapEmpty" class="chart-empty" style="display:none;">
+                                    Data belum tersedia
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HORIZONTAL -->
+                <div class="chart-card chart-horizontal">
+
+                    <div class="vertical-wrapper">
+
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                Top 5 Wilayah dengan Prospek Terbanyak
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="regionChart"></canvas>
+
+                                <div id="regionEmpty" class="chart-empty" style="display:none;">
+                                    Data belum tersedia
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                Leads Berdasarkan Sektor
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="sektorChart"></canvas>
+
+                                <div id="sektorEmpty" class="chart-empty" style="display:none;">
+                                    Data belum tersedia
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= CARD LAPORAN ================= -->
+        <div class="card" id="laporanSection">
+
+            <div class="card-header">
+                <h3 id="reportTitle">Data Laporan - ${name}</h3>
+            </div>
+
+            <div class="months-container" style="display:flex; justify-content:space-between; align-items:center;">
+
+                <div class="months">
+                    <span onclick="loadMonth('Januari')">Januari</span> |
+                    <span onclick="loadMonth('Februari')">Februari</span> |
+                    <span onclick="loadMonth('Maret')">Maret</span> |
+                    <span onclick="loadMonth('April')">April</span> |
+                    <span onclick="loadMonth('Mei')">Mei</span> |
+                    <span onclick="loadMonth('Juni')">Juni</span> |
+                    <span onclick="loadMonth('Juli')">Juli</span> |
+                    <span onclick="loadMonth('Agustus')">Agustus</span> |
+                    <span onclick="loadMonth('September')">September</span> |
+                    <span onclick="loadMonth('Oktober')">Oktober</span> |
+                    <span onclick="loadMonth('November')">November</span> |
+                    <span onclick="loadMonth('Desember')">Desember</span>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+
+                    <button id="editBtn" class="edit-btn" onclick="toggleEditMode()">
+                        Edit
+                    </button>
+
+                    <button class="add-btn" onclick="openAddModal()">
+                        Tambah
+                    </button>
+
+                    <div class="save-wrapper">
+
+                        <button id="saveBtn" class="save-btn" onclick="toggleSaveMenu()">
+                            Simpan
+                        </button>
+
+                        <div id="saveMenu" class="save-menu">
+
+                            <div class="save-option" onclick="exportCurrentMonth()">
+                                Simpan Bulan Terkini
+                            </div>
+
+                            <div class="save-divider"></div>
+
+                            <div class="save-option" onclick="exportAllMonths()">
+                                Simpan Seluruh Data
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    `;
+
+    // ================= PRELOAD SEMUA BULAN =================
+    currentMonth = "Januari";
+    loadMonth("Januari");
+
+    // ================= PRELOAD BULAN LAIN DI BACKGROUND =================
+    setTimeout(() => {
+        preloadAllMonths();
+    }, 500);
+}
+
+// ================= LOAD BULAN =================
+async function loadMonth(month) {
+
+    if (!currentName) return;
+
+    currentMonth = month;
+
+    // ================= SET ACTIVE BULAN =================
+    document.querySelectorAll(".months span").forEach(span => {
+        span.classList.remove("active-month");
+        if (span.innerText === month) {
+            span.classList.add("active-month");
+        }
+    });
+
+    const key = `${currentName}_${month}`;
+
+    // ================= DATA SUDAH ADA DI CACHE =================
+    if (dataCache[key] !== undefined) {
+
+        if (dataCache[key].length <= 1) {
+            showEmptyState();
+        } else {
+            renderFilteredTable(dataCache[key]);
+        }
+
+        // updateKPI(); 
+        // updateSuccessRate();
+        // updateProdukChart();
+        // updateWeekChart();
+        // updateRegionChart();
+        // updateSektorChart();
+        // updatePieSourceChart();
+        // updateTreemapWilayahSektor();
+        // updateSektorDominasiChart();
+        // updateProdukDominasiChart();
+        // updateWilayahChart();
+        // updatePerformaSalesChart();
+        // updateMultiLineChart();
+        // updateSourceStackedChart();
+
+        if (dataCache[key] !== undefined) {
+
+            if (dataCache[key].length <= 1) {
+                showEmptyState();
+            } else {
+                renderFilteredTable(dataCache[key]);
+            }
+
+            refreshAllCharts(); // 🔥 hanya sekali
+            return;
+        }
+    }
+
+    try {
+
+        const response = await fetch(
+            `${WEB_APP_URL}?bulan=${month}&pic=${currentName}`
+        );
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+
+            dataCache[key] = result.data;
+
+            if (result.data.length <= 1) {
+                showEmptyState();
+            } else {
+                renderFilteredTable(result.data);
+            }
+
+        } else {
+
+            dataCache[key] = [];
+            showEmptyState();
+
+        }
+
+        updateKPI();
+        updateSuccessRate();
+        updateProdukChart();
+        updateWeekChart();
+        updateRegionChart();
+        updateSektorChart();
+        updatePieSourceChart();
+        updateTreemapWilayahSektor();
+        updateSektorDominasiChart();
+        updateProdukDominasiChart();
+        updateWilayahChart();
+        updatePerformaSalesChart();
+        updateMultiLineChart();
+        updateSourceStackedChart();
+
+    } catch (error) {
+
+        console.error("Fetch error:", error);
+        showEmptyState();
+
+    }
+}
+
+function refreshAllCharts(){
+
+    updateKPI(); 
+    updateSuccessRate();
+    updateProdukChart();
+    updateWeekChart();
+    updateRegionChart();
+    updateSektorChart();
+    updatePieSourceChart();
+    updateTreemapWilayahSektor();
+
+    updateSektorDominasiChart();
+    updateProdukDominasiChart();
+    updateWilayahChart();
+    updatePerformaSalesChart();
+    updateMultiLineChart();
+    updateSourceStackedChart();
+}
+function safeRenderChart(chartVar, canvasId, isEmpty){
+
+    const canvas = document.getElementById(canvasId);
+    const empty = canvas.parentElement.querySelector(".chart-empty");
+
+    if(chartVar){
+        chartVar.destroy();
+    }
+
+    if(isEmpty){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return null;
+    }
+
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    return canvas;
+}
+let isAutoScrolling = false;
+
+document.querySelector(".main").addEventListener("scroll", function () {
+
+    if (isAutoScrolling) return;
+
+    const laporan = document.getElementById("laporanSection");
+    const rect = laporan.getBoundingClientRect();
+
+    // 🔥 kalau bagian atas laporan sudah hampir masuk layar
+    if (rect.top < 200 && rect.top > 0) {
+
+        isAutoScrolling = true;
+
+        laporan.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        setTimeout(() => {
+            isAutoScrolling = false;
+        }, 500);
+    }
+
+});
+function cleanValue(value) {
+
+    if (value === null || value === undefined || value === "") {
+        return "-";
+    }
+
+    if (typeof value === "string" && value.includes("T") && value.includes("Z")) {
+
+        const date = new Date(value);
+
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+
+    return value;
+}
+
+// ================= FUNGSI CHART DASHBOARD PIC =================
+function animateCounterPercent(element, target, duration = 900){
+
+    let startTime = null;
+
+    function easeOutCubic(t){
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function update(timestamp){
+
+        if(!startTime) startTime = timestamp;
+
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const eased = easeOutCubic(progress);
+
+        const value = Math.floor(eased * target);
+
+        element.innerText = value + "%";
+
+        if(progress < 1){
+            requestAnimationFrame(update);
+        } else {
+            element.innerText = target + "%";
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+function updateSuccessRate(){
+
+    const key = `${currentName}_${currentMonth}`;
+
+    if(!dataCache[key] || dataCache[key].length === 0){
+        document.getElementById("kpiSuccess").innerText = "0%";
+        return;
+    }
+
+    const rows = dataCache[key];
+
+    let government = 0;
+    let newIndustry = 0;
+    let reseller = 0;
+    let pabrik = 0;
+
+    rows.forEach(row => {
+
+        let sektor = (row[3] || "")
+            .toLowerCase()
+            .replace(/\s+/g,"")
+            .replace(/\//g,"");
+
+        if(sektor === "government"){
+            government++;
+        }
+
+        else if(
+            sektor === "rparph" ||
+            sektor === "pengusahaes" ||
+            sektor === "kontraktor" ||
+            sektor === "perikanan" ||
+            sektor === "corporate"
+        ){
+            newIndustry++;
+        }
+
+        else if(
+            sektor === "agenes" ||
+            sektor === "agenmakelar"
+        ){
+            reseller++;
+        }
+
+        else if(sektor === "produsenes"){
+            pabrik++;
+        }
+
+    });
+
+    const totalActual =
+        government +
+        newIndustry +
+        reseller +
+        pabrik;
+
+    const totalTarget = 70;
+
+    let percent = (totalActual / totalTarget) * 100;
+
+    if(percent > 100) percent = 100;
+
+    const el = document.getElementById("kpiSuccess");
+    animateCounterPercent(el, Math.round(percent), 1000);
+}
+
+function updateRegionChart(){
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key] || [];
+
+    const canvas = document.getElementById("regionChart");
+    const empty = document.getElementById("regionEmpty");
+
+    if(!canvas) return;
+
+    if(regionChart){
+        regionChart.destroy();
+        regionChart = null;
+    }
+
+    // ================= EMPTY =================
+    if(rows.length <= 1){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    const regionCount = {};
+
+    rows.slice(1).forEach(row => {
+
+        let region = (row[2] || "")
+            .toString()
+            .toLowerCase()
+            .trim();
+
+        if(!region || region === "-") return;
+
+        regionCount[region] = (regionCount[region] || 0) + 1;
+    });
+
+    const sorted = Object.entries(regionCount)
+        .map(([label,value])=>({label,value}))
+        .sort((a,b)=>b.value - a.value)
+        .slice(0,5);
+
+    if(sorted.length === 0){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    // ================= SHOW =================
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    const labels = sorted.map(x =>
+        x.label.charAt(0).toUpperCase() + x.label.slice(1)
+    );
+
+    const values = sorted.map(x => x.value);
+
+    const ctx = canvas.getContext("2d");
+
+    canvas.style.opacity = 0;
+
+    regionChart = new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels,
+            datasets:[{
+                data:values,
+                backgroundColor:"#4e6b50",
+                borderRadius:6
+            }]
+        },
+        options:{
+            indexAxis:"y",
+            responsive:true,
+            maintainAspectRatio:false,
+
+            // 🔥 animasi utama
+            animation:{
+                duration:800,
+                easing:"easeOutQuart"
+            },
+
+            // 🔥 grow dari kiri
+            animations:{
+                x:{
+                    from:0,
+                    delay:(ctx)=>ctx.dataIndex * 120
+                }
+            },
+
+            plugins:{ 
+                legend:{display:false} 
+            },
+
+            scales:{
+                x:{
+                    beginAtZero:true,
+                    grid:{display:false},
+                    border:{display:false}
+                },
+                y:{
+                    grid:{display:false},
+                    border:{display:false}
+                }
+            }
+        }
+    });
+
+    // 🔥 fade in
+    setTimeout(() => {
+        canvas.style.transition = "opacity 0.4s ease";
+        canvas.style.opacity = 1;
+    }, 50);
+}
+
+let sektorChart = null;
+
+function updateSektorChart(){
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key] || [];
+
+    const canvas = document.getElementById("sektorChart");
+    const empty = document.getElementById("sektorEmpty");
+
+    if(!canvas) return;
+
+    // 🔥 destroy chart lama
+    if(sektorChart){
+        sektorChart.destroy();
+        sektorChart = null;
+    }
+
+    // ================= EMPTY =================
+    if(rows.length <= 1){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    const segmentMap = {
+        "Reseller/Kompetitor": ["Reseller","Agen/ Makelar","Kontraktor"],
+        "Government": ["Government"],
+        "Existing Pabrik": ["Produsen Es"],
+        "New Segment": ["RPA/RPH","Perikanan","Pengusaha","Corporate","Agen Es"]
+    };
+
+    let segmentTotals = {
+        "Reseller/Kompetitor": 0,
+        "Government": 0,
+        "Existing Pabrik": 0,
+        "New Segment": 0
+    };
+
+    rows.slice(1).forEach(row => {
+        let sektor = (row[3] || "").toString().trim();
+
+        for(let segment in segmentMap){
+            if(segmentMap[segment].includes(sektor)){
+                segmentTotals[segment]++;
+            }
+        }
+    });
+
+    const activeSegments = Object.keys(segmentTotals)
+        .filter(seg => segmentTotals[seg] > 0);
+
+    if(activeSegments.length === 0){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    const sektorList = [
+        "Reseller","Agen/ Makelar","Kontraktor",
+        "Government",
+        "Produsen Es",
+        "RPA/RPH","Perikanan","Pengusaha","Corporate","Agen Es"
+    ];
+
+    let datasetMap = {};
+    sektorList.forEach(s => {
+        datasetMap[s] = new Array(activeSegments.length).fill(0);
+    });
+
+    rows.slice(1).forEach(row => {
+
+        let sektor = (row[3] || "").toString().trim();
+
+        activeSegments.forEach((seg, i) => {
+            if(segmentMap[seg].includes(sektor)){
+                datasetMap[sektor][i]++;
+            }
+        });
+
+    });
+
+    const colors = [
+        "#ff914d","#ffa94d","#ffc078",
+        "#4e73df",
+        "#4e6b50",
+        "#61adfd","#74c0fc","#a5d8ff","#339af0","#1c7ed6"
+    ];
+
+    const datasets = sektorList.map((sektor, i) => ({
+        label: sektor,
+        data: datasetMap[sektor],
+        backgroundColor: colors[i],
+        borderRadius:6
+    }));
+
+    // ================= SHOW =================
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    const ctx = canvas.getContext("2d");
+
+    // 🔥 fade out dulu
+    canvas.style.opacity = 0;
+
+    sektorChart = new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels: activeSegments,
+            datasets: datasets
+        },
+        options:{
+            indexAxis:"y",
+            responsive:true,
+            maintainAspectRatio:false,
+
+            // 🔥 animasi utama
+            animation:{
+                duration:800,
+                easing:"easeOutQuart"
+            },
+
+            // 🔥 grow dari kiri + stagger
+            animations:{
+                x:{
+                    from:0,
+                    delay:(ctx)=>ctx.datasetIndex * 80
+                }
+            },
+
+            scales:{
+                x:{ 
+                    stacked:true, 
+                    beginAtZero:true, 
+                    grid:{display:false},
+                    border:{display:false}
+                },
+                y:{ 
+                    stacked:true, 
+                    grid:{display:false},
+                    border:{display:false}
+                }
+            },
+
+            plugins:{
+                legend:{ display:false },
+
+                tooltip:{
+                    callbacks:{
+                        title:(context)=>context[0].label,
+                        label:(context)=>`${context.dataset.label}: ${context.raw}`
+                    }
+                }
+            }
+        }
+    });
+
+    // 🔥 fade in
+    setTimeout(() => {
+        canvas.style.transition = "opacity 0.4s ease";
+        canvas.style.opacity = 1;
+    }, 50);
+}
+
+let pieSourceChart = null;
+
+function updatePieSourceChart() {
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key] || [];
+
+    const canvas = document.getElementById("pieSourceChart");
+    const empty = document.getElementById("pieEmpty");
+
+    if (!canvas) return;
+
+    // 🔥 destroy lama
+    if (pieSourceChart) {
+        pieSourceChart.destroy();
+        pieSourceChart = null;
+    }
+
+    // ================= EMPTY =================
+    if (rows.length <= 1) {
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    const sourceCount = {};
+
+    rows.slice(1).forEach(item => {
+
+        let source = (item[6] || "")
+            .toString()
+            .trim()
+            .toLowerCase();
+
+        if (!source || source === "-") return;
+
+        sourceCount[source] = (sourceCount[source] || 0) + 1;
+    });
+
+    const labels = Object.keys(sourceCount);
+    const values = Object.values(sourceCount);
+
+    // 🔥 DEBUG (WAJIB CEK)
+    console.log("PIE:", labels, values);
+
+    if (labels.length === 0) {
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    const ctx = canvas.getContext("2d");
+
+    pieSourceChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    "#87a889",
+                    "#4e6b50",
+                    "#a8d5ba",
+                    "#74c69d",
+                    "#52b788",
+                    "#40916c"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 800,
+                easing: "easeOutCubic"
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 10,     // 🔥 kecilin kotak
+                        boxHeight: 10,    // 🔥 bikin square (penting!)
+                        padding: 12,      // jarak antar item
+
+                        color: "#4e6b50",
+
+                        font: {
+                            size: 10      // 🔥 kecilin font
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+let treemapChart = null;
+
+function updateTreemapWilayahSektor() {
+
+    const canvas = document.getElementById("treemapChart");
+    const empty = document.getElementById("treemapEmpty");
+
+    if (!canvas) return;
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key] || [];
+
+    // 🔥 destroy lama
+    if (treemapChart) {
+        treemapChart.destroy();
+        treemapChart = null;
+    }
+
+    // ================= EMPTY =================
+    if (!rows || rows.length <= 1) {
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    // ================= GROUP =================
+    const map = {};
+
+    rows.slice(1).forEach(row => {
+
+        const region = (row[2] || "").toString().trim();
+        const sektor = (row[3] || "").toString().trim();
+
+        if (!region || region === "-" || !sektor || sektor === "-") return;
+
+        if (!map[region]) map[region] = {};
+        if (!map[region][sektor]) map[region][sektor] = 0;
+
+        map[region][sektor]++;
+    });
+
+    // ================= TOP REGION =================
+    let regionTotals = Object.keys(map).map(r => ({
+        region: r,
+        total: Object.values(map[r]).reduce((a, b) => a + b, 0)
+    }));
+
+    regionTotals = regionTotals.filter(r => r.total > 2);
+    regionTotals.sort((a, b) => b.total - a.total);
+
+    const topRegions = regionTotals.slice(0, 3).map(r => r.region);
+
+    // ================= WARNA =================
+    const colors = ["#4e6b50", "#f28c52", "#5a78e0"];
+    const regionColor = {};
+    topRegions.forEach((r,i)=> regionColor[r] = colors[i]);
+
+    // ================= FLATTEN =================
+    const data = [];
+
+    topRegions.forEach(region => {
+
+        const sektorList = Object.entries(map[region])
+            .filter(([_, value]) => value > 1)
+            .sort((a, b) => b[1] - a[1]);
+
+        sektorList.forEach(([sektor, value]) => {
+            data.push({ region, sektor, value });
+        });
+    });
+
+    // ================= EMPTY AFTER FILTER =================
+    if (data.length === 0) {
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    // ================= SHOW =================
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    const ctx = canvas.getContext("2d");
+
+    // 🔥 fade out
+    canvas.style.opacity = 0;
+
+    treemapChart = new Chart(ctx, {
+        type: 'treemap',
+        data: {
+            datasets: [{
+                tree: data,
+                key: 'value',
+                spacing: 1,
+                borderWidth: 1,
+                borderColor: "#ffffff",
+                borderRadius: 3,
+
+                backgroundColor(ctx) {
+                    const d = ctx.raw?._data || ctx.raw || {};
+                    return regionColor[d.region] || "#ccc";
+                },
+
+                captions: { display: false },
+
+                labels: {
+                    display: true,
+                    align: "center",
+
+                    formatter(ctx) {
+                        const d = ctx.raw?._data || ctx.raw || {};
+                        if (!d.sektor) return "";
+
+                        let text = d.sektor;
+
+                        if (text.length > 15) {
+                            const words = text.split(" ");
+                            if (words.length > 1) {
+                                return words[0] + "\n" + words.slice(1).join(" ");
+                            }
+                            return text.substring(0, 12) + "...";
+                        }
+
+                        return text;
+                    },
+
+                    color: "#ffffff",
+
+                    font: ctx => {
+                        const w = ctx.raw?.w || 0;
+                        const h = ctx.raw?.h || 0;
+                        const size = Math.min(w, h) / 6;
+
+                        return {
+                            size: Math.max(10, Math.min(size, 16)),
+                            weight: "bold"
+                        };
+                    }
+                }
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 900,
+                easing: "easeOutQuart"
+            },
+
+            animations: {
+                x: { from: 0 },
+                y: { from: 0 },
+                width: { from: 0 },
+                height: { from: 0 }
+            },
+
+            plugins: {
+                legend: {
+                    display: true,
+                    position: "bottom",
+                    labels: {
+                        boxWidth: 10,
+                        boxHeight: 10, // 🔥 square
+                        font: { size: 10 },
+
+                        generateLabels() {
+                            return topRegions.map(r => ({
+                                text: r,
+                                fillStyle: regionColor[r]
+                            }));
+                        }
+                    }
+                },
+
+                tooltip: {
+                    callbacks: {
+                        title: (ctx) => {
+                            const d = ctx[0].raw?._data || ctx[0].raw || {};
+                            return d.region || "";
+                        },
+                        label: (ctx) => {
+                            const d = ctx.raw?._data || ctx.raw || {};
+                            return d.sektor ? `${d.sektor}: ${d.value}` : "";
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // 🔥 fade in
+    setTimeout(() => {
+        canvas.style.transition = "opacity 0.4s ease";
+        canvas.style.opacity = 1;
+    }, 50);
+}
+
+function animateCounter(element, target, duration = 800){
+
+    let start = 0;
+    const increment = target / (duration / 16); // 60fps
+    let current = 0;
+
+    function update(){
+
+        current += increment;
+
+        if(current >= target){
+            element.innerText = target;
+            return;
+        }
+
+        element.innerText = Math.floor(current);
+        requestAnimationFrame(update);
+    }
+
+    update();
+}
+
+function updateKPI(){
+
+    let proses = 0;
+    let lost = 0;
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key];
+
+    if(!rows || rows.length === 0){
+        document.getElementById("kpiProses").innerText = 0;
+        document.getElementById("kpiLost").innerText = 0;
+        return;
+    }
+
+    rows.forEach(row => {
+
+        const progress = (row[row.length - 1] || "")
+            .toString()
+            .toLowerCase()
+            .trim();
+
+        if(progress === "dalam proses") proses++;
+        if(progress === "lost") lost++;
+
+    });
+
+    const elProses = document.getElementById("kpiProses");
+    const elLost = document.getElementById("kpiLost");
+
+    animateCounter(elProses, proses);
+    animateCounter(elLost, lost);
+
+}
+
+function updateProdukChart(){
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key] || [];
+
+    const canvas = document.getElementById("produkChart");
+    const empty = document.getElementById("produkEmpty");
+
+    if (!canvas) return;
+
+    // 🔥 destroy chart lama
+    if(produkChart){
+        produkChart.destroy();
+        produkChart = null;
+    }
+
+    // ================= EMPTY DATA =================
+    if(rows.length <= 1){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    const produkCount = {};
+
+    rows.slice(1).forEach(row => {
+
+        let produk = (row[8] || "")
+            .toString()
+            .toLowerCase()
+            .replace(/\s+/g,"")
+            .trim();
+
+        if(!produk || produk === "-") return;
+
+        produkCount[produk] = (produkCount[produk] || 0) + 1;
+    });
+
+    // ================= EMPTY SETELAH FILTER =================
+    if(Object.keys(produkCount).length === 0){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    // ================= ADA DATA =================
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    const labels = Object.keys(produkCount).map(p =>
+        p.charAt(0).toUpperCase() + p.slice(1)
+    );
+
+    const values = Object.values(produkCount);
+
+    const ctx = canvas.getContext("2d");
+
+    produkChart = new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels:labels,
+            datasets:[{
+                data:values,
+                backgroundColor:"#4e6b50",
+                borderRadius:6
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+
+            animation:{
+                duration:900,
+                easing:"easeOutQuart",
+                delay: (ctx) => ctx.dataIndex * 100
+            },
+
+            animations:{
+                y:{
+                    from:0
+                }
+            },
+
+            scales:{
+                x:{ 
+                    grid:{display:false},
+                    border:{display:false}
+                },
+                y:{
+                    beginAtZero:true,
+                    ticks:{precision:0},
+                    grid:{display:false},
+                    border:{display:false}
+                }
+            },
+
+            plugins:{
+                legend:{display:false}
+            }
+        }
+    });
+}
+
+let sektorDominasiChart = null;
+
+function updateSektorDominasiChart() {
+
+    const container = document.getElementById("sektorDominasiContainer");
+    if (!container) return;
+
+    // ================= LOADING =================
+    if (Object.keys(dataCache).length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty" style="opacity:0.6;">
+                Chart sedang loading...
+            </div>
+        `;
+        return;
+    }
+
+    const sektorCount = {};
+
+    Object.keys(dataCache).forEach(key => {
+
+        // 🔥 FILTER BULAN (SAMA PERSIS)
+        if (globalMonth !== "All" && !key.includes("_" + globalMonth)) {
+            return;
+        }
+
+        const rows = dataCache[key];
+        if (!rows || rows.length <= 1) return;
+
+        rows.slice(1).forEach(row => {
+
+            let sektor = (row[3] || "")
+                .toString()
+                .toLowerCase()
+                .trim();
+
+            if (!sektor || sektor === "-") return;
+
+            sektorCount[sektor] = (sektorCount[sektor] || 0) + 1;
+        });
+
+    });
+
+    // ================= SORT =================
+    const sorted = Object.entries(sektorCount)
+        .map(([sektor, count]) => ({ sektor, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // ================= EMPTY =================
+    if (sorted.length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty">
+                Data Prospek belum tersedia
+            </div>
+        `;
+        return;
+    }
+
+    // ================= DATA =================
+    const labels = sorted.map(x =>
+        x.sektor.charAt(0).toUpperCase() + x.sektor.slice(1)
+    );
+
+    const values = sorted.map(x => x.count);
+
+    // ================= RESET CANVAS =================
+    container.innerHTML = `<canvas id="sektorDominasiChart"></canvas>`;
+    const ctx = document.getElementById("sektorDominasiChart");
+
+    if (sektorDominasiChart && typeof sektorDominasiChart.destroy === "function") {
+        sektorDominasiChart.destroy();
+        sektorDominasiChart = null;
+    }
+
+    // ================= RENDER =================
+    sektorDominasiChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: "#4e6b50",
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 900,
+                easing: "easeOutQuart",
+                delay: (ctx) => ctx.dataIndex * 100
+            },
+
+            animations: {
+                x: {
+                    from: 0
+                }
+            },
+
+            plugins: {
+                legend: { display: false }
+            },
+
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { display: false },
+                    border: { display: false }
+                },
+                y: {
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+
+function updateProdukDominasiChart() {
+
+    const container = document.getElementById("produkDominasiContainer");
+    if (!container) return;
+
+    // ================= LOADING =================
+    if (Object.keys(dataCache).length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty" style="opacity:0.6;">
+                Chart sedang loading...
+            </div>
+        `;
+        return;
+    }
+
+    const produkCount = {};
+
+    Object.keys(dataCache).forEach(key => {
+
+        // 🔥 FILTER BULAN
+        if (globalMonth !== "All" && !key.includes("_" + globalMonth)) {
+            return;
+        }     
+
+        const rows = dataCache[key];
+        if (!rows || rows.length <= 1) return;
+
+        rows.slice(1).forEach(row => {
+
+            let produk = (row[8] || "") 
+                .toString()
+                .toLowerCase()
+                .trim();
+
+            if (!produk || produk === "-") return;
+
+            produkCount[produk] = (produkCount[produk] || 0) + 1;
+        });
+
+    });
+
+    // ================= SORT =================
+    const sorted = Object.entries(produkCount)
+        .map(([produk, count]) => ({ produk, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // ================= EMPTY =================
+    if (sorted.length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty">
+                Data produk belum tersedia
+            </div>
+        `;
+        return;
+    }
+
+    // ================= DATA =================
+    const labels = sorted.map(x =>
+        x.produk.charAt(0).toUpperCase() + x.produk.slice(1)
+    );
+
+    const values = sorted.map(x => x.count);
+
+    // ================= RESET CANVAS =================
+    container.innerHTML = `<canvas id="produkDominasiChart"></canvas>`;
+    const ctx = document.getElementById("produkDominasiChart");
+
+    if (produkDominasiChart && typeof produkDominasiChart.destroy === "function") {
+        produkDominasiChart.destroy();
+        produkDominasiChart = null;
+    }
+
+    // ================= RENDER =================
+    produkDominasiChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: "#4e6b50",
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 900,
+                easing: "easeOutQuart",
+                delay: (ctx) => ctx.dataIndex * 100
+            },
+
+            animations: {
+                x: {
+                    from: 0
+                }
+            },
+
+            plugins: {
+                legend: { display: false }
+            },
+
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { display: false },
+                    border: { display: false }
+                },
+                y: {
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+
+let wilayahContainer = null;
+
+function updateWilayahChart() {
+
+    const container = document.getElementById("wilayahContainer");
+    if (!container) return;
+
+    const wilayahCount = {};
+
+    Object.keys(dataCache).forEach(key => {
+
+        // 🔥 FILTER BULAN
+        if (globalMonth !== "All" && !key.includes("_" + globalMonth)) {
+            return;
+        }
+
+        const rows = dataCache[key];
+        if (!rows || rows.length <= 1) return;
+
+        rows.slice(1).forEach(row => {
+
+            // 🔥 CLEANING
+            let wilayah = (row[2] || "")
+                .toString()
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, "")
+                .replace(/[^a-z]/g, "");
+
+            if (!wilayah || wilayah === "-") return;
+
+            wilayahCount[wilayah] = (wilayahCount[wilayah] || 0) + 1;
+        });
+
+    });
+
+    // ================= SORT =================
+    const sorted = Object.entries(wilayahCount)
+        .map(([wilayah, count]) => ({ wilayah, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // ================= EMPTY =================
+    if (sorted.length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty">
+                Data wilayah belum tersedia
+            </div>
+        `;
+        return;
+    }
+
+    // ================= DATA =================
+    const labels = sorted.map(x =>
+        x.wilayah.charAt(0).toUpperCase() + x.wilayah.slice(1)
+    );
+
+    const values = sorted.map(x => x.count);
+
+    // ================= RESET CANVAS =================
+    container.innerHTML = `<canvas id="wilayahChart"></canvas>`;
+    const ctx = document.getElementById("wilayahChart");
+
+    if (wilayahChart && typeof wilayahChart.destroy === "function") {
+        wilayahChart.destroy();
+        wilayahChart = null;
+    }
+
+    // ================= RENDER =================
+    wilayahChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                label: "Jumlah Leads",
+                data: values,
+                backgroundColor: "#4e6b50",
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 900,
+                easing: "easeOutQuart",
+                delay: (ctx) => ctx.dataIndex * 120
+            },
+
+            animations: {
+                y: { from: 0 } // 🔥 grow dari bawah (vertical)
+            },
+
+            plugins: {
+                legend: { display: false }
+            },
+
+            scales: {
+                x: {
+                    grid: { display: false },
+                    border: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+
+    // 🔥 FADE IN EFFECT
+    container.classList.remove("show");
+    setTimeout(() => {
+        container.classList.add("show");
+    }, 100);
+}
+
+let performaSalesChart = null;
+
+function updatePerformaSalesChart() {
+
+    const container = document.getElementById("performaSalesContainer");
+    if (!container) return;
+
+    const prosesCount = {};
+    const lostCount = {};
+    const unknownCount = {};
+
+    Object.keys(dataCache).forEach(key => {
+
+        if (globalMonth !== "All" && !key.includes("_" + globalMonth)) {
+            return;
+        }
+
+        const pic = key.split("_")[0]; 
+        const rows = dataCache[key];
+
+        if (!rows || rows.length <= 1) return;
+
+        rows.slice(1).forEach(row => {
+
+            let progress = (row[9] || "")
+                .toString()
+                .toLowerCase()
+                .trim();
+
+            // 🔥 KLASIFIKASI
+            if (progress === "-" || progress === "" || progress === null) {
+                unknownCount[pic] = (unknownCount[pic] || 0) + 1;
+            }
+            else if (progress === "lost") {
+                lostCount[pic] = (lostCount[pic] || 0) + 1;
+            } 
+            else {
+                prosesCount[pic] = (prosesCount[pic] || 0) + 1;
+            }
+
+        });
+
+    });
+
+    // ================= GABUNG PIC =================
+    const allPIC = Array.from(new Set([
+        ...Object.keys(prosesCount),
+        ...Object.keys(lostCount),
+        ...Object.keys(unknownCount)
+    ]));
+
+    if (allPIC.length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty">
+                Data performa sales belum tersedia
+            </div>
+        `;
+        return;
+    }
+
+    // ================= SORT =================
+    const sorted = allPIC
+        .map(pic => ({
+            pic,
+            total: (prosesCount[pic] || 0) + 
+                   (lostCount[pic] || 0) + 
+                   (unknownCount[pic] || 0)
+        }))
+        .sort((a, b) => b.total - a.total);
+
+    const labels = sorted.map(x => x.pic);
+
+    const prosesData = labels.map(pic => prosesCount[pic] || 0);
+    const lostData = labels.map(pic => lostCount[pic] || 0);
+    const unknownData = labels.map(pic => unknownCount[pic] || 0);
+
+    // ================= RESET CANVAS =================
+    container.innerHTML = `<canvas id="performaSalesChart"></canvas>`;
+    const ctx = document.getElementById("performaSalesChart");
+
+    if (performaSalesChart && typeof performaSalesChart.destroy === "function") {
+        performaSalesChart.destroy();
+        performaSalesChart = null;
+    }
+
+    // ================= RENDER =================
+    performaSalesChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: "Dalam Proses",
+                    data: prosesData,
+                    backgroundColor: "#4e6b50", // 🔵 biru
+                    borderRadius: 4
+                },
+                {
+                    label: "Lost",
+                    data: lostData,
+                    backgroundColor: "#e60000", // 🔴 merah
+                    borderRadius: 4
+                },
+                {
+                    label: "Unknown",
+                    data: unknownData,
+                    backgroundColor: "#f59f00", // 🟠 jingga
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: { display: false },
+                    border: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            },
+
+            animation: {
+                duration: 900,
+                easing: "easeOutQuart"
+            },
+
+            animations: {
+                y: { from: 0 }
+            },
+
+            plugins: {
+                legend: {
+                    display: true,
+                    position: "bottom",
+                    labels: {
+                        boxWidth: 12
+                    }
+                }
+            }
+        }
+    });
+
+    container.classList.remove("show");
+    setTimeout(() => {
+        container.classList.add("show");
+    }, 100);
+}
+
+let sourceStackedChart = null;
+
+function updateSourceStackedChart() {
+
+    const container = document.getElementById("horizontalStackedContainer");
+    if (!container) return;
+
+    // 🔥 destroy chart lama
+    if (sourceStackedChart) {
+        sourceStackedChart.destroy();
+        sourceStackedChart = null;
+    }
+
+    const sourceMap = {};
+    // format:
+    // {
+    //   "Ana": { "kanvas online": 10, "leads pribadi": 5 }
+    // }
+
+    Object.keys(dataCache).forEach(key => {
+
+        // 🔥 FILTER BULAN
+        if (globalMonth !== "All" && !key.includes("_" + globalMonth)) {
+            return;
+        }
+
+        const pic = key.split("_")[0];
+        const rows = dataCache[key];
+
+        if (!rows || rows.length <= 1) return;
+
+        if (!sourceMap[pic]) {
+            sourceMap[pic] = {};
+        }
+
+        rows.slice(1).forEach(row => {
+
+            let source = (row[6] || "")
+                .toString()
+                .toLowerCase()
+                .trim();
+
+            if (!source || source === "-" || source === "") return;
+
+            sourceMap[pic][source] = (sourceMap[pic][source] || 0) + 1;
+
+        });
+
+    });
+
+    const allPIC = Object.keys(sourceMap);
+
+    if (allPIC.length === 0) {
+        container.innerHTML = `
+            <div class="chart-empty">
+                Data belum tersedia
+            </div>
+        `;
+        return;
+    }
+
+    // 🔥 ambil semua jenis source unik
+    const allSources = Array.from(new Set(
+        allPIC.flatMap(pic => Object.keys(sourceMap[pic]))
+    ));
+
+    // 🔥 warna dinamis
+    const colorPalette = [
+        "#4e6b50",
+        "#74c69d",
+        "#52b788",
+        "#40916c",
+        "#2d6a4f",
+        "#95d5b2",
+        "#b7e4c7",
+        "#1b4332"
+    ];
+
+    const datasets = allSources.map((source, i) => ({
+        label: source,
+        data: allPIC.map(pic => sourceMap[pic][source] || 0),
+        backgroundColor: colorPalette[i % colorPalette.length],
+        borderRadius: 4
+    }));
+
+    // 🔥 reset canvas
+    container.innerHTML = `<canvas id="sourceStackedChart"></canvas>`;
+    const ctx = document.getElementById("sourceStackedChart");
+
+    sourceStackedChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: allPIC,
+            datasets: datasets
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+                x: {
+                    stacked: true,
+                    beginAtZero: true,
+                    grid: { display: false },
+                    border: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        boxWidth: 10,
+                        boxHeight: 10,
+                        font: { size: 10 }
+                    }
+                }
+            },
+
+            animation: {
+                duration: 800,
+                easing: "easeOutQuart"
+            },
+
+            animations: {
+                x: {
+                    from: 0
+                }
+            }
+        }
+    });
+}
+
+// ================= HELPER =================
+function capitalize(text){
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function getRandomColor(){
+    const colors = ["#4e73df","#9c7ae5","#f4a261","#2a9d8f","#e63946"];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+let multiLineChart = null;
+
+function updateMultiLineChart(){
+
+    const container = document.getElementById("multiLineContainer");
+    if (!container) return;
+
+    // ================= FILTER BULAN =================
+    if (globalMonth === "All"){
+        container.innerHTML = `
+            <div class="chart-empty">
+                Chart akan keluar setelah melakukan filter bulan
+            </div>
+        `;
+        return;
+    }
+
+    const salesList = getAllSalesNames();
+
+    const weekLabels = ["Week 1","Week 2","Week 3","Week 4","Week 5"];
+
+    const datasets = [];
+
+    const colors = ["#4e73df","#9c7ae5","#f4a261","#2a9d8f","#e63946"];
+
+    salesList.forEach((sales, index) => {
+
+        const key = `${sales}_${globalMonth}`;
+        const rows = dataCache[key];
+
+        if (!rows || rows.length <= 1) return;
+
+        const weekCount = [0,0,0,0,0];
+
+        rows.slice(1).forEach(row => {
+
+            let week = (row[0] || "")
+                .toString()
+                .toLowerCase()
+                .trim();
+
+            if (!week) return;
+
+            // 🔥 FIX: HITUNG BERDASARKAN "week X"
+            if (week.includes("week 1")) weekCount[0]++;
+            else if (week.includes("week 2")) weekCount[1]++;
+            else if (week.includes("week 3")) weekCount[2]++;
+            else if (week.includes("week 4")) weekCount[3]++;
+            else if (week.includes("week 5")) weekCount[4]++;
+        });
+
+        datasets.push({
+            label: sales,
+            data: weekCount,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length], // 🔥 biar legend full warna
+            pointBackgroundColor: colors[index % colors.length],
+            pointBorderColor: colors[index % colors.length],
+            borderWidth: 2,          // 🔥 lebih tipis
+            pointRadius: 3,          // 🔥 titik kecil
+            pointHoverRadius: 5,
+            tension: 0.2,            // 🔥 belokan lebih tegas (kurangi dari 0.4)
+            fill: false
+        });
+
+    });
+
+    // ================= EMPTY =================
+    if (datasets.length === 0){
+        container.innerHTML = `
+            <div class="chart-empty">
+                Data belum tersedia
+            </div>
+        `;
+        return;
+    }
+
+    // ================= RESET =================
+    container.innerHTML = `<canvas id="multiLineChart"></canvas>`;
+    const ctx = document.getElementById("multiLineChart");
+
+    if (multiLineChart && typeof multiLineChart.destroy === "function"){
+        multiLineChart.destroy();
+    }
+
+    // ================= RENDER =================
+    multiLineChart = new Chart(ctx,{
+        type:"line",
+        data:{
+            labels: weekLabels,
+            datasets: datasets
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+
+            animation:{
+                duration:800,
+                easing:"easeOutQuart"
+            },
+
+            plugins:{
+                legend:{
+                    position:"top",
+                    labels:{
+                        usePointStyle: false,   // 🔥 MATIIN point style (ini kuncinya)
+                        boxWidth: 30,           // 🔥 panjang kotak
+                        boxHeight: 10,          // 🔥 tinggi kotak
+                        color:"#4e6b50",
+                        padding:15
+                    }
+                }
+            },
+
+            scales:{
+                x:{
+                    grid:{ display:false },  // 🔥 hilangin grid
+                    border:{ display:false }
+                },
+                y:{
+                    beginAtZero:true,
+                    grid:{ display:false },  // 🔥 hilangin grid
+                    border:{ display:false },
+                    ticks:{ precision:0 }
+                }
+            },
+
+            elements:{
+                line:{
+                    borderJoinStyle:"round"
+                }
+            }
+        }
+    });
+}
+
+function updateWeekChart(){
+
+    const key = `${currentName}_${currentMonth}`;
+    const rows = dataCache[key] || [];
+
+    const canvas = document.getElementById("weekChart");
+    const empty = document.getElementById("weekEmpty");
+
+    if(!canvas) return;
+
+    // 🔥 destroy chart lama
+    if(weekChart){
+        weekChart.destroy();
+        weekChart = null;
+    }
+
+    // ================= EMPTY =================
+    if(rows.length <= 1){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    let week1 = 0;
+    let week2 = 0;
+    let week3 = 0;
+    let week4 = 0;
+    let week5 = 0;
+
+    rows.slice(1).forEach(row => {
+
+        let crc = (row[0] || "")
+            .toString()
+            .toLowerCase()
+            .replace(/\s+/g,"")
+            .trim();
+
+        if(crc === "week1") week1++;
+        else if(crc === "week2") week2++;
+        else if(crc === "week3") week3++;
+        else if(crc === "week4") week4++;
+        else if(crc === "week5") week5++;
+    });
+
+    const values = [week1,week2,week3,week4,week5];
+
+    // 🔥 kalau semua 0 → anggap kosong
+    const total = values.reduce((a,b)=>a+b,0);
+    if(total === 0){
+        canvas.style.display = "none";
+        empty.style.display = "flex";
+        return;
+    }
+
+    // ================= SHOW =================
+    canvas.style.display = "block";
+    empty.style.display = "none";
+
+    const ctx = canvas.getContext("2d");
+
+    // 🔥 fade out dulu biar terasa reload
+    canvas.style.opacity = 0;
+
+    weekChart = new Chart(ctx,{
+        type:"line",
+        data:{
+            labels:["Week 1","Week 2","Week 3","Week 4","Week 5"],
+            datasets:[{
+                label:"Jumlah Leads",
+                data:values,
+                borderColor:"#4e6b50",
+                backgroundColor:"rgba(78,107,80,0.12)",
+                tension:0.45,
+                cubicInterpolationMode:'monotone',
+                borderWidth:2,
+
+                pointRadius:2,
+                pointHoverRadius:4,
+                pointBackgroundColor:"#4e6b50",
+
+                fill:true
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+
+            // 🔥 animasi utama
+            animation:{
+                duration:800,
+                easing:"easeOutQuart"
+            },
+
+            animations:{
+                // garis ditarik kiri → kanan
+                x:{
+                    type:'number',
+                    easing:'easeInOutCubic',
+                    duration:1000,
+                    from: NaN,
+                    delay:(ctx)=>ctx.index * 120
+                },
+
+                // naik dari bawah
+                y:{
+                    type:'number',
+                    easing:'easeOutCubic',
+                    duration:1000,
+                    from:(ctx)=>ctx.chart.scales.y.getPixelForValue(0)
+                },
+
+                // titik muncul
+                radius:{
+                    duration:400,
+                    from:0,
+                    to:3,
+                    delay:(ctx)=>ctx.index * 120 + 200
+                }
+            },
+
+            scales:{
+                x:{
+                    grid:{display:false},
+                    border:{display:false}
+                },
+                y:{
+                    beginAtZero:true,
+                    ticks:{precision:0},
+                    grid:{display:false},
+                    border:{display:false}
+                }
+            },
+
+            plugins:{
+                legend:{display:false},
+                tooltip:{enabled:true}
+            }
+        }
+    });
+
+    setTimeout(() => {
+        canvas.style.transition = "opacity 0.4s ease";
+        canvas.style.opacity = 1;
+    }, 50);
+}
+
+// ================= FILTER & RENDER =================
+function renderFilteredTable(rows) {
+
+    if (!rows || rows.length <= 1) {
+        showEmptyState();
+        return;
+    }
+
+    const header = rows[0].map(col => col.trim());
+
+    const selectedIndexes = EXPECTED_COLUMNS.map(col => header.indexOf(col));
+
+    const thead = document.querySelector("#dataTable thead");
+    const tbody = document.querySelector("#dataTable tbody");
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    // ================= HEADER =================
+    const headerRow = document.createElement("tr");
+    const thNo = document.createElement("th");
+    thNo.textContent = "No";
+    headerRow.appendChild(thNo);
+
+    EXPECTED_COLUMNS.forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col;
+        headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+
+    // ================= BODY =================
+    rows.slice(1).forEach((row, index) => {
+
+        const tr = document.createElement("tr");
+        tr.dataset.row = index + 2;
+
+        const tdNo = document.createElement("td");
+        tdNo.textContent = index + 1;
+        tdNo.style.textAlign = "center";
+        tdNo.style.fontWeight = "500";
+        tr.appendChild(tdNo);
+
+        selectedIndexes.forEach(colIndex => {
+
+            const td = document.createElement("td");
+            const value = row[colIndex];
+            td.textContent = cleanValue(value);
+            tr.appendChild(td);
+
+        });
+
+        tr.addEventListener("contextmenu", function(e) {
+            e.preventDefault();
+
+            const confirmDelete = confirm("Hapus data ini?");
+            if (!confirmDelete) return;
+
+            deleteRowFromSheet(tr.dataset.row);
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+function showEmptyState() {
+
+    const thead = document.querySelector("#dataTable thead");
+    const tbody = document.querySelector("#dataTable tbody");
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+
+    td.colSpan = EXPECTED_COLUMNS.length + 1;
+    td.style.textAlign = "center";
+    td.style.padding = "40px";
+    td.innerHTML = `
+        <div style="font-size:16px; margin-bottom:15px;">
+            Data belum tersedia
+        </div>
+        <button class="add-btn" onclick="openAddModal()">
+            Tambah Data
+        </button>
+    `;
+
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+}
+
+// ================= SAVE DATA =================
+function exportCurrentMonth() {
+
+    const key = `${currentName}_${currentMonth}`;
+    if (!dataCache[key]) {
+        alert("Data belum tersedia.");
+        return;
+    }
+
+    const rows = dataCache[key];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+    const fileName = `Data_${currentName}_${currentMonth}.xlsx`;
+
+    XLSX.writeFile(workbook, fileName);
+}
+
+function openExcelImport() {
+    document.getElementById("excelFile").click();
+}
+
+document.getElementById("excelFile").addEventListener("change", handleExcel);
+
+function handleExcel(e){
+
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(evt){
+
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, {type:'array'});
+
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet, {header:1});
+
+        processExcelData(json);
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+// function getVal(row, index){
+//     const val = row[index];
+//     return (val === undefined || val === null || val === "") ? "-" : val;
+// }
+
+function processExcelData(rows){
+
+    if(!rows || rows.length < 2){
+        alert("File kosong");
+        return;
+    }
+
+    // =========================
+    // 🔥 1. DETECT HEADER OTOMATIS
+    // =========================
+    const headerIndex = rows.findIndex(row =>
+        row && row.some(cell =>
+            cell && cell.toString().toLowerCase().includes("nama")
+        )
+    );
+
+    if(headerIndex === -1){
+        alert("Header tidak ditemukan");
+        return;
+    }
+
+    const rawHeader = rows[headerIndex];
+
+    // =========================
+    // 🔥 2. NORMALISASI HEADER
+    // =========================
+    function cleanHeader(header){
+        return header
+            .toString()
+            .replace(/\s+/g, " ")
+            .replace(/\u00A0/g, " ")
+            .trim()
+            .toLowerCase();
+    }
+
+    const header = rawHeader.map(h => cleanHeader(h));
+
+    console.log("HEADER:", header);
+
+    // =========================
+    // 🔥 3. MAPPING FLEXIBLE
+    // =========================
+    function findIndex(keyword){
+        return header.findIndex(h => h.includes(keyword));
+    }
+
+    const colIndex = {
+        crc: findIndex("crc"),
+        nama: findIndex("nama"),
+        region: findIndex("region"),
+        sektor: findIndex("sektor"),
+        status: findIndex("status"),
+        tanggal: findIndex("tanggal"),
+        source: findIndex("source"),
+        notelp: findIndex("telp"),
+        produk: findIndex("produk"),
+        progress: findIndex("progress")
+    };
+
+    console.log("COL INDEX:", colIndex);
+
+    // =========================
+    // 🔥 4. AMBIL DATA SETELAH HEADER
+    // =========================
+    const dataRows = rows.slice(headerIndex + 1);
+
+    // =========================
+    // 🔥 5. SAFE GET VALUE
+    // =========================
+    function getVal(row, index){
+        if(index === -1) return "-";
+        const val = row[index];
+
+        if(val === undefined || val === null) return "-";
+
+        return val.toString().trim() === "" ? "-" : val;
+    }
+
+    // =========================
+    // 🔥 6. PARSE DATA
+    // =========================
+    const cleanData = dataRows
+        .filter(row => row && row.length > 0)
+        .map(row => ({
+
+            crc: getVal(row, colIndex.crc),
+            nama: getVal(row, colIndex.nama),
+            region: getVal(row, colIndex.region),
+            sektor: getVal(row, colIndex.sektor),
+            status: getVal(row, colIndex.status),
+            tanggal: getVal(row, colIndex.tanggal),
+            source: getVal(row, colIndex.source),
+            notelp: getVal(row, colIndex.notelp),
+            produk: getVal(row, colIndex.produk),
+            progress: getVal(row, colIndex.progress)
+
+        }));
+
+    console.log("DATA FINAL:", cleanData.slice(0,5));
+
+    // =========================
+    // 🔥 7. KIRIM DATA
+    // =========================
+    handleInsertDecision(cleanData);
+}
+
+function handleInsertDecision(data){
+
+    const key = `${currentName}_${currentMonth}`;
+    const existing = dataCache[key];
+
+    if(existing && existing.length > 1){
+
+        const confirmReset = confirm("Data sudah ada. Reset data?");
+
+        if(!confirmReset){
+            alert("Import dibatalkan");
+            return;
+        }
+
+        sendBulkData(data, true);
+    } else {
+        sendBulkData(data, false);
+    }
+}
+
+async function sendBulkData(data, reset=false){
+
+    const payload = {
+        action: "bulk_insert",
+        bulan: currentMonth,
+        pic: currentName,
+        data: data,
+        reset: reset
+    };
+
+    const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+
+    if(result.status === "success"){
+
+        alert("Import berhasil 🚀");
+
+        // 🔥 HAPUS CACHE
+        const key = `${currentName}_${currentMonth}`;
+        delete dataCache[key];
+
+        // 🔥 RELOAD DATA DARI SERVER
+        await loadMonth(currentMonth);
+
+    }
+}
+
+function exportAllMonths() {
+
+    let combinedRows = [];
+    let headerAdded = false;
+
+    Object.keys(dataCache).forEach(key => {
+
+        const [name] = key.split("_");
+        if (name !== currentName) return;
+
+        const rows = dataCache[key];
+        if (!rows) return;
+
+        rows.forEach((row, index) => {
+
+            if (index === 0) {
+                if (!headerAdded) {
+                    combinedRows.push(row);
+                    headerAdded = true;
+                }
+            } else {
+                combinedRows.push(row);
+            }
+
+        });
+    });
+
+    if (combinedRows.length === 0) {
+        alert("Data tidak tersedia.");
+        return;
+    }
+
+    const worksheet = XLSX.utils.aoa_to_sheet(combinedRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Semua Data");
+
+    const fileName = `Data_${currentName}_Semua_Bulan.xlsx`;
+
+    XLSX.writeFile(workbook, fileName);
+}
+
+// ================= TAMBAH DATA =================
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxh9yU9NyiOi3srlmu5jSa-Mxvtc9Pi-zq1lamXeEJKKH-U2T1KNCEV6NJ7VlhAvZZR/exec";
+
+function openAddModal() {
+
+    const modal = document.getElementById("addModal");
+    const container = document.getElementById("formContainer");
+
+    container.innerHTML = "";
+
+    EXPECTED_COLUMNS.forEach(col => {
+
+        const div = document.createElement("div");
+        div.style.marginBottom = "10px";
+
+        let inputField = "";
+
+        // ================= SEKTOR =================
+        if (col === "Sektor") {
+            inputField = `
+                <select id="input_${col}" style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+                    <option value="">Pilih Sektor</option>
+                    <option>Produsen Es</option>
+                    <option>RPA/RPH</option>
+                    <option>Government</option>
+                    <option>Agen/Makelar</option>
+                    <option>Kontraktor</option>
+                    <option>Perikanan</option>
+                    <option>Reseller</option>
+                    <option>Pengusaha</option>
+                    <option>Agen Es</option>
+                    <option>Corporate</option>
+                </select>
+            `;
+        }
+
+        // ================= STATUS =================
+        else if (col === "Status") {
+            inputField = `
+                <select id="input_${col}" style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+                    <option value="">Pilih Status</option>
+                    <option>Cold</option>
+                    <option>Warm</option>
+                    <option>Hot</option>
+                </select>
+            `;
+        }
+
+        // ================= SOURCE =================
+        else if (col === "Source Data") {
+            inputField = `
+                <select id="input_${col}" style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+                    <option value="">Pilih Source</option>
+                    <option>Kanvas Offline</option>
+                    <option>Kanvas Online</option>
+                    <option>Leads Pribadi</option>
+                    <option>SEO</option>
+                    <option>Exsisting</option>
+                    <option>Ads 2024</option>
+                </select>
+            `;
+        }
+
+        // ================= PRODUK =================
+        else if (col === "Produk") {
+            inputField = `
+                <select id="input_${col}" style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+                    <option value="">Pilih Produk</option>
+                    <option>Tube</option>
+                    <option>Flake</option>
+                    <option>Slurry</option>
+                    <option>Block</option>
+                    <option>Cube</option>
+                    <option>Coldroom</option>
+                    <option>Lainnya</option>
+                </select>
+            `;
+        }
+
+        // ================= PROGRESS =================
+        else if (col === "Progress") {
+            inputField = `
+                <select id="input_${col}" style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+                    <option value="">Pilih Progress</option>
+                    <option>Dalam Proses</option>
+                    <option>Lost</option>
+                    <option>Negosiasi</option>
+                </select>
+            `;
+        }
+
+        // ================= TANGGAL CONTACT (KALENDER) =================
+        else if (col === "Tanggal contact") {
+
+            const today = new Date().toISOString().split("T")[0];
+
+            inputField = `
+                <input type="date" id="input_${col}"
+                    value="${today}"
+                    style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+            `;
+        }
+
+        // ================= DEFAULT INPUT =================
+        else {
+            inputField = `
+                <input type="text" id="input_${col}"
+                    style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
+            `;
+        }
+
+        div.innerHTML = `
+            <label style="font-size:12px;">${col}</label>
+            ${inputField}
+        `;
+
+        container.appendChild(div);
+    });
+
+    modal.style.display = "flex";
+}
+
+function closeAddModal() {
+    document.getElementById("addModal").style.display = "none";
+}
+
+function toggleEditMode() {
+
+    const editBtn = document.getElementById("editBtn");
+    if (!editBtn) return;
+
+    const tbody = document.querySelector("#dataTable tbody");
+    if (!tbody) return;
+
+    if (!isEditMode) {
+
+        isEditMode = true;
+        editBtn.innerText = "Simpan";
+        editBtn.classList.remove("edit-btn");
+        editBtn.classList.add("save-btn");
+
+        tbody.querySelectorAll("td").forEach(td => {
+            td.contentEditable = true;
+            td.style.backgroundColor = "#fff8e1";
+        });
+
+    } else {
+        saveEditedData();
+    }
+}
+
+function toggleDeleteMode(){
+
+    deleteMode = !deleteMode;
+
+    const deleteButton = document.querySelector(".btn-red");
+
+    if(deleteMode){
+        deleteButton.innerText = "Batal";
+    }else{
+        deleteButton.innerText = "Hapus Anggota";
+    }
+
+    const menuItems = document.querySelectorAll(".menu li");
+
+    menuItems.forEach(li => {
+
+        const link = li.querySelector("a");
+
+        if(!link || link.innerText === "Home") return;
+
+        if(deleteMode){
+
+            if(!link.querySelector(".delete-pic-btn")){
+
+                const btn = document.createElement("span");
+
+                btn.innerText = "✖";
+                btn.className = "delete-pic-btn";
+
+                btn.onclick = function(e){
+
+                    e.stopPropagation();
+
+                    const picName = link.childNodes[0].nodeValue.trim();
+
+                    const confirmDelete = confirm(
+                        "Hapus anggota " + picName + " beserta seluruh data PIC tersebut?"
+                    );
+
+                    if(!confirmDelete) return;
+
+                    deletePIC(picName, li);
+                };
+
+                link.appendChild(btn);
+            }
+
+        } else {
+
+            const btn = link.querySelector(".delete-pic-btn");
+            if(btn) btn.remove();
+
+        }
+
+    });
+
+}
+
+function openAddMemberModal(){
+    document.getElementById("modalOverlay").style.display="flex";
+}
+
+function closeAddMemberModal(){
+    document.getElementById("modalOverlay").style.display="none";
+}
+
+function addMemberToSidebar(nick){
+
+    const menu = document.querySelector(".menu");
+
+    const li = document.createElement("li");
+
+    const a = document.createElement("a");
+
+    a.href="#";
+    a.innerText = nick;
+
+    a.onclick = function(){
+        loadPage("laporan", nick, a);
+    };
+
+    li.appendChild(a);
+
+    menu.appendChild(li);
+
+}
+function startKpiLoadingCounter(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return null;
+
+    let value = 0;
+    el.innerText = value;
+
+    const interval = setInterval(() => {
+        value = (value + 1) % 10;
+        el.innerText = value;
+    }, 120);
+
+    return interval;
+}
+
+function stopKpiLoadingCounter(intervalId, elementId, finalValue) {
+    if (intervalId) clearInterval(intervalId);
+
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    animateKpiValue(elementId, finalValue);
+}
+
+function animateKpiValue(elementId, finalValue, duration = 700) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const endValue = Number(finalValue) || 0;
+    const startValue = 0;
+    const startTime = performance.now();
+
+    function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const currentValue = Math.floor(startValue + (endValue - startValue) * progress);
+
+        el.innerText = currentValue;
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            el.innerText = endValue;
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+async function updateHomeTotalProses() { 
+    const el = document.getElementById("homeTotalProses");
+    if (!el) return;
+
+    const loadingId = startKpiLoadingCounter("homeTotalProses");
+
+    const salesNames = getAllSalesNames();
+    const tasks = [];
+
+    for (const sales of salesNames) {
+
+        // 🔥 PILIH BULAN (FILTER)
+        const monthsToProcess = (globalMonth === "All") ? months : [globalMonth];
+
+        for (const month of monthsToProcess) {
+
+            const key = `${sales}_${month}`;
+
+            if (dataCache[key]) {
+                tasks.push(Promise.resolve({
+                    sales,
+                    month,
+                    rows: dataCache[key]
+                }));
+            } else {
+                tasks.push(
+                    fetch(`${WEB_APP_URL}?bulan=${encodeURIComponent(month)}&pic=${encodeURIComponent(sales)}`)
+                        .then(res => res.json())
+                        .then(result => {
+                            const rows = (result.status === "success" && Array.isArray(result.data))
+                                ? result.data
+                                : [];
+
+                            dataCache[key] = rows;
+
+                            return { sales, month, rows };
+                        })
+                        .catch(err => {
+                            console.error(`Gagal ambil data ${sales} - ${month}:`, err);
+                            dataCache[key] = [];
+                            return { sales, month, rows: [] };
+                        })
+                );
+            }
+        }
+    }
+
+    const results = await Promise.all(tasks);
+
+    let totalProses = 0;
+
+    results.forEach(({ rows }) => {
+        if (!Array.isArray(rows) || rows.length <= 1) return;
+        if (!Array.isArray(rows[0])) return;
+
+        const header = rows[0].map(col =>
+            (col || "").toString().trim().toLowerCase()
+        );
+
+        const progressIndex = header.indexOf("progress");
+        if (progressIndex === -1) return;
+
+        rows.slice(1).forEach(row => {
+            if (!Array.isArray(row)) return;
+
+            let progress = (row[progressIndex] || "")
+                .toString()
+                .normalize("NFKC")
+                .replace(/\s+/g, " ")
+                .trim()
+                .toLowerCase();
+
+
+
+            if (progress === "dalam proses" || progress.replace(/\s+/g, "") === "dalamproses") {
+                totalProses++;
+            }
+        });
+    });
+
+    stopKpiLoadingCounter(loadingId, "homeTotalProses", totalProses);
+    console.log("Total Leads Dalam Proses Seluruh Sales:", totalProses);
+}
+
+async function updateHomeTotalLost() {
+    const el = document.getElementById("homeTotalLost");
+    if (!el) return;
+
+    const loadingId = startKpiLoadingCounter("homeTotalLost");
+
+    const salesNames = getAllSalesNames();
+    const tasks = [];
+
+    for (const sales of salesNames) {
+
+        const monthsToProcess = (globalMonth === "All") ? months : [globalMonth];
+
+        for (const month of monthsToProcess) {
+            const key = `${sales}_${month}`;
+
+            if (dataCache[key]) {
+                tasks.push(Promise.resolve({
+                    sales,
+                    month,
+                    rows: dataCache[key]
+                }));
+            } else {
+                tasks.push(
+                    fetch(`${WEB_APP_URL}?bulan=${encodeURIComponent(month)}&pic=${encodeURIComponent(sales)}`)
+                        .then(res => res.json())
+                        .then(result => {
+                            const rows = (result.status === "success" && Array.isArray(result.data))
+                                ? result.data
+                                : [];
+
+                            dataCache[key] = rows;
+
+                            return { sales, month, rows };
+                        })
+                        .catch(err => {
+                            console.error(`Gagal ambil data ${sales} - ${month}:`, err);
+                            dataCache[key] = [];
+                            return { sales, month, rows: [] };
+                        })
+                );
+            }
+        }
+    }
+
+    const results = await Promise.all(tasks);
+
+    let totalLost = 0;
+
+    results.forEach(({ rows }) => {
+        if (!Array.isArray(rows) || rows.length <= 1) return;
+        if (!Array.isArray(rows[0])) return;
+
+        const header = rows[0].map(col =>
+            (col || "").toString().trim().toLowerCase()
+        );
+
+        const progressIndex = header.indexOf("progress");
+        if (progressIndex === -1) return;
+
+        rows.slice(1).forEach(row => {
+            if (!Array.isArray(row)) return;
+
+            const progress = (row[progressIndex] || "")
+                .toString()
+                .normalize("NFKC")
+                .replace(/\s+/g, " ")
+                .trim()
+                .toLowerCase();
+
+            if (progress === "lost") {
+                totalLost++;
+            }
+        });
+    });
+
+    stopKpiLoadingCounter(loadingId, "homeTotalLost", totalLost);
+    console.log("Total Leads Lost Seluruh Sales:", totalLost);
+}
+
+async function updateHomeTotalRegion() {
+    const el = document.getElementById("homeTotalRegion");
+    if (!el) return;
+
+    const loadingId = startKpiLoadingCounter("homeTotalRegion");
+
+    const salesNames = getAllSalesNames();
+    const tasks = [];
+
+    for (const sales of salesNames) {
+        for (const month of months) {
+            const key = `${sales}_${month}`;
+
+            if (dataCache[key]) {
+                tasks.push(Promise.resolve(dataCache[key]));
+            } else {
+                tasks.push(
+                    fetch(`${WEB_APP_URL}?bulan=${encodeURIComponent(month)}&pic=${encodeURIComponent(sales)}`)
+                        .then(res => res.json())
+                        .then(result => {
+                            const rows = (result.status === "success" && Array.isArray(result.data))
+                                ? result.data
+                                : [];
+
+                            dataCache[key] = rows;
+                            return rows;
+                        })
+                        .catch(() => {
+                            dataCache[key] = [];
+                            return [];
+                        })
+                );
+            }
+        }
+    }
+
+    const results = await Promise.all(tasks);
+
+    const uniqueRegions = new Set();
+
+    results.forEach(rows => {
+        if (!Array.isArray(rows) || rows.length <= 1 || !Array.isArray(rows[0])) return;
+
+        const header = rows[0].map(col =>
+            (col || "").toString().trim().toLowerCase()
+        );
+
+        const regionIndex = header.indexOf("region");
+        if (regionIndex === -1) return;
+
+        rows.slice(1).forEach(row => {
+            if (!Array.isArray(row)) return;
+
+            const rawRegion = (row[regionIndex] || "").toString();
+
+            const normalizedRegion = rawRegion
+                .normalize("NFKC")
+                .toLowerCase()
+                .replace(/[^\p{L}\p{N}]/gu, "")
+                .trim();
+
+            if (normalizedRegion && normalizedRegion !== "-") {
+                uniqueRegions.add(normalizedRegion);
+            }
+        });
+    });
+
+    const totalReg = uniqueRegions.size;
+
+    stopKpiLoadingCounter(loadingId, "homeTotalRegion", totalReg);
+    console.log("Total Region Unik Seluruh Sales:", totalReg, Array.from(uniqueRegions));
+}
+async function updateHomeTotalLeads() {
+    const el = document.getElementById("homeTotalLeads");
+    if (!el) return;
+
+    const loadingId = startKpiLoadingCounter("homeTotalLeads");
+
+    const salesNames = getAllSalesNames();
+    const tasks = [];
+
+    for (const sales of salesNames) {
+        for (const month of months) {
+            const key = `${sales}_${month}`;
+
+            if (dataCache[key]) {
+                tasks.push(Promise.resolve(dataCache[key]));
+            } else {
+                tasks.push(
+                    fetch(`${WEB_APP_URL}?bulan=${encodeURIComponent(month)}&pic=${encodeURIComponent(sales)}`)
+                        .then(res => res.json())
+                        .then(result => {
+                            const rows = (result.status === "success" && Array.isArray(result.data))
+                                ? result.data
+                                : [];
+
+                            dataCache[key] = rows;
+                            return rows;
+                        })
+                        .catch(() => {
+                            dataCache[key] = [];
+                            return [];
+                        })
+                );
+            }
+        }
+    }
+
+    const results = await Promise.all(tasks);
+
+    let totalLeads = 0;
+
+    results.forEach(rows => {
+        if (!Array.isArray(rows) || rows.length <= 1 || !Array.isArray(rows[0])) return;
+
+        const header = rows[0].map(col =>
+            (col || "").toString().trim().toLowerCase()
+        );
+
+        const namaIndex = header.indexOf("nama");
+        if (namaIndex === -1) return;
+
+        rows.slice(1).forEach(row => {
+            if (!Array.isArray(row)) return;
+
+            const nama = (row[namaIndex] || "").toString().trim();
+
+            if (nama && nama !== "-") {
+                totalLeads++;
+            }
+        });
+    });
+
+    stopKpiLoadingCounter(loadingId, "homeTotalLeads", totalLeads);
+    console.log("Total Leads Seluruh Sales:", totalLeads);
+}
+async function resetAllData(){
+
+    const confirmReset = confirm(
+        "⚠️ PERINGATAN!\n\n" +
+        "Reset akan menghapus SEMUA DATA di seluruh PIC.\n" +
+        "Data akan kembali kosong seperti awal.\n\n" +
+        "Lanjutkan reset?"
+    );
+
+    if(!confirmReset) return;
+
+    try{
+
+        const response = await fetch(WEB_APP_URL,{
+            method:"POST",
+            body: JSON.stringify({
+                action:"reset_all_data"
+            })
+        });
+
+        const result = await response.json();
+
+        if(result.status === "reset_success"){
+
+            alert("Semua data berhasil direset");
+
+            dataCache = {};
+
+            if(currentName){
+                showEmptyState();
+            }
+
+        }else{
+
+            alert("Gagal reset data");
+
+        }
+
+    }catch(err){
+
+        console.error(err);
+        alert("Error reset data");
+
+    }
+
+}
+
+async function deletePIC(picName, element){
+
+    try{
+
+        const response = await fetch(
+            `${WEB_APP_URL}?action=delete_pic&pic=${picName}`
+        );
+
+        const result = await response.json();
+
+        if(result.status === "pic_deleted"){
+
+            element.remove();
+
+            alert("Anggota berhasil dihapus");
+
+        }
+
+    }catch(err){
+
+        console.error(err);
+        alert("Gagal menghapus anggota");
+
+    }
+
+}
+
+async function submitNewMember(){
+
+    const fullname = document.getElementById("memberFullName").value;
+    const nickname = document.getElementById("memberNick").value;
+
+    if(!fullname || !nickname){
+        alert("Isi seluruh data terlebih dahulu!");
+        return;
+    }
+
+    try{
+
+        await fetch(WEB_APP_URL,{
+            method:"POST",
+            body: JSON.stringify({
+                action:"add_member",
+                fullname:fullname,
+                nickname:nickname
+            })
+        });
+
+        alert("Anggota berhasil ditambahkan");
+
+        closeAddMemberModal();
+
+        addMemberToSidebar(nickname);
+
+    }catch(err){
+        console.error(err);
+        alert("Gagal tambah member");
+    }
+
+}
+
+async function saveEditedData() {
+
+    const editBtn = document.getElementById("editBtn");
+    if (!editBtn) return;
+    
+    const rows = document.querySelectorAll("#dataTable tbody tr");
+
+    let updatedData = [];
+
+    rows.forEach(tr => {
+
+        let rowData = [];
+
+        const tds = tr.querySelectorAll("td");
+
+        // mulai dari index 1 supaya skip kolom No
+        for (let i = 1; i < tds.length; i++) {
+            rowData.push(tds[i].innerText.trim() || "-");
+        }
+
+        updatedData.push({
+            row: parseInt(tr.dataset.row),
+            values: rowData
+        });
+    });
+
+    try {
+
+        const response = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "update",
+                bulan: currentMonth.substring(0,3).toUpperCase(),
+                pic: currentName.toUpperCase(),
+                data: updatedData
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "updated") {
+
+            alert("Data berhasil diperbarui");
+
+            isEditMode = false;
+            editBtn.innerText = "Edit";
+            editBtn.classList.remove("save-btn");
+            editBtn.classList.add("edit-btn");
+
+            document.querySelectorAll("#dataTable td").forEach(td => {
+                td.contentEditable = false;
+                td.style.backgroundColor = "";
+            });
+
+            const key = `${currentName}_${currentMonth}`;
+            delete dataCache[key];
+            loadMonth(currentMonth);
+
+        } else {
+            alert("Gagal update data");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Error update data");
+    }
+}
+
+async function refreshCurrentView() {
+
+    const key = `${currentName}_${currentMonth}`;
+    delete dataCache[key];
+    await loadMonth(currentMonth);
+
+}
+
+async function submitData() {
+
+    if (!currentName || !currentMonth) {
+        alert("Pilih bulan dulu bro.");
+        return;
+    }
+
+    // ================= FORMAT TANGGAL =================
+    let rawDate = document.getElementById("input_Tanggal contact").value;
+    let formattedDate = "-";
+
+    if (rawDate) {
+        const dateObj = new Date(rawDate);
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const year = dateObj.getFullYear();
+        formattedDate = `${day}-${month}-${year}`;
+    }
+
+    // ================= BUILD PAYLOAD =================
+    let payload = {
+        bulan: currentMonth.substring(0,3).toUpperCase(),
+        pic: currentName.toUpperCase(),
+        crc: document.getElementById("input_crc").value || "-",
+        nama: document.getElementById("input_Nama").value || "-",
+        region: document.getElementById("input_Region").value || "-",
+        sektor: document.getElementById("input_Sektor").value || "-",
+        status: document.getElementById("input_Status").value || "-",
+        tanggal: formattedDate,
+        source: document.getElementById("input_Source Data").value || "-",
+        notelp: document.getElementById("input_No Telp").value || "-",
+        produk: document.getElementById("input_Produk").value || "-",
+        progress: document.getElementById("input_Progress").value || "-"
+    };
+
+    try {
+
+        const response = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success" || result.status === "added") {
+
+            alert("Data berhasil ditambahkan");
+
+            closeAddModal();
+            await refreshCurrentView();
+
+        } else {
+            alert("Gagal menambahkan data");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Gagal kirim data");
+    }
+}
+
+async function deleteRowFromSheet(rowNumber) {
+
+    try {
+
+        const response = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "delete",
+                bulan: currentMonth.substring(0,3).toUpperCase(),
+                pic: currentName.toUpperCase(),
+                row: parseInt(rowNumber)
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "deleted") {
+
+            alert("Data berhasil dihapus");
+
+            const key = `${currentName}_${currentMonth}`;
+            delete dataCache[key];
+
+            await loadMonth(currentMonth);
+        }
+
+        else if (result.status === "deleted_and_sheet_removed") {
+
+            alert("Data terakhir dihapus. Sheet otomatis dihapus.");
+
+            const key = `${currentName}_${currentMonth}`;
+            delete dataCache[key];
+            showEmptyState();
+        }
+
+        else {
+            alert("Gagal hapus data");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Error hapus data");
+    }
+}
+
+function toggleSaveMenu() {
+    const menu = document.getElementById("saveMenu");
+    if (!menu) return;
+    menu.classList.toggle("show");
+}
+
+window.onload = function() {
+    loadPage("home");
+};
+
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("saveMenu");
+    const btn = document.getElementById("saveBtn");
+
+    if (!menu || !btn) return;
+
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.remove("show");
+    }
+});
+</script>
+
+</body>
+</html>
