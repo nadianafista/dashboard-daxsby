@@ -1084,7 +1084,7 @@ border-radius:12px;
     <label>Nama Lengkap</label>
     <input type="text" id="memberFullName" placeholder="Masukkan nama lengkap">
 
-    <label>Nama Panggilan (Sidebar)</label>
+    <label>Nama Panggilan</label>
     <input type="text" id="memberNick" placeholder="Contoh: Nadia">
 
     <div class="modal-buttons">
@@ -1123,19 +1123,33 @@ border-radius:12px;
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
     <div>
+
         <h2>Menu</h2>
-        <ul class="menu">
-            <li><a href="#" onclick="loadPage('home', null, this)" class="active">Home</a></li>
-            <li><a href="#" onclick="loadPage('laporan','Ana', this)">Ana</a></li>
-            <li><a href="#" onclick="loadPage('laporan','Kevin', this)">Kevin</a></li>
-            <li><a href="#" onclick="loadPage('laporan','Arif', this)">Arif</a></li>
+
+        <ul class="menu" id="sidebarMenu">
+            <li>
+                <a href="#"
+                   onclick="loadPage('home', null, this)"
+                   class="active">
+                   Home
+                </a>
+            </li>
         </ul>
+
     </div>
 
     <div class="sidebar-bottom">
-        <button class="btn btn-blue" onclick="resetAllData()">Reset Data</button>
-        <button class="btn btn-red" onclick="toggleDeleteMode()">Hapus Anggota</button>
-        <button class="btn btn-orange" onclick="openAddMemberModal()">Tambah Anggota</button>
+        <button class="btn btn-blue" onclick="resetAllData()">
+            Reset Data
+        </button>
+
+        <button class="btn btn-red" onclick="toggleDeleteMode()">
+            Hapus Anggota
+        </button>
+
+        <button class="btn btn-orange" onclick="openAddMemberModal()">
+            Tambah Anggota
+        </button>
     </div>
 </div>
 
@@ -1698,7 +1712,71 @@ function loadPage(page, name = null, el = null) {
         preloadAllMonths();
     }, 500);
 }
+async function loadSidebarMembers(){
 
+    const menu = document.getElementById("sidebarMenu");
+
+    if(!menu) return;
+
+    // 🔥 RESET
+    menu.innerHTML = `
+        <li>
+            <a href="#"
+               onclick="loadPage('home', null, this)"
+               class="active">
+               Home
+            </a>
+        </li>
+    `;
+
+    try{
+
+        const res = await fetch(
+            `${WEB_APP_URL}?action=get_all_sheets`
+        );
+
+        const result = await res.json();
+
+        if(result.status !== "success") return;
+
+        // 🔥 AMBIL PIC UNIK
+        const uniquePIC = [];
+
+        result.data.forEach(sheetName => {
+
+            const match = sheetName.match(/\((.*?)\)/);
+
+            if(match){
+
+                const pic = match[1].trim();
+
+                if(
+                    pic &&
+                    !uniquePIC.includes(pic)
+                ){
+                    uniquePIC.push(pic);
+                }
+            }
+        });
+
+        // 🔥 RENDER
+        uniquePIC.forEach(pic => {
+
+            menu.innerHTML += `
+                <li>
+                    <a href="#"
+                       onclick="loadPage('laporan','${pic}', this)">
+                       ${pic}
+                    </a>
+                </li>
+            `;
+        });
+
+    }catch(err){
+
+        console.error("Load sidebar error:", err);
+    }
+}
 // ================= LOAD BULAN =================
 async function loadMonth(month) {
 
@@ -1724,21 +1802,6 @@ async function loadMonth(month) {
         } else {
             renderFilteredTable(dataCache[key]);
         }
-
-        // updateKPI(); 
-        // updateSuccessRate();
-        // updateProdukChart();
-        // updateWeekChart();
-        // updateRegionChart();
-        // updateSektorChart();
-        // updatePieSourceChart();
-        // updateTreemapWilayahSektor();
-        // updateSektorDominasiChart();
-        // updateProdukDominasiChart();
-        // updateWilayahChart();
-        // updatePerformaSalesChart();
-        // updateMultiLineChart();
-        // updateSourceStackedChart();
 
         if (dataCache[key] !== undefined) {
 
@@ -1919,65 +1982,99 @@ function updateSuccessRate(){
     const key = `${currentName}_${currentMonth}`;
 
     if(!dataCache[key] || dataCache[key].length === 0){
+
         document.getElementById("kpiSuccess").innerText = "0%";
+
         return;
     }
 
     const rows = dataCache[key];
 
+    // ================= MASTER CATEGORY =================
+    const resellerList = [
+        "reseller",
+        "agen/makelar",
+        "agent/makelar",
+        "agent",
+        "kontraktor"
+    ];
+
+    const governmentList = [
+        "government"
+    ];
+
+    const pabrikList = [
+        "produsenes",
+        "icefactoryowner"
+    ];
+
+    // ================= TOTAL =================
     let government = 0;
-    let newIndustry = 0;
     let reseller = 0;
     let pabrik = 0;
+    let newSegment = 0;
 
-    rows.forEach(row => {
+    rows.slice(1).forEach(row => {
 
         let sektor = (row[3] || "")
+            .toString()
             .toLowerCase()
             .replace(/\s+/g,"")
             .replace(/\//g,"");
 
-        if(sektor === "government"){
+        if(!sektor || sektor === "-"){
+            return;
+        }
+
+        // 🔥 GOVERNMENT
+        if(governmentList.includes(sektor)){
+
             government++;
         }
 
-        else if(
-            sektor === "rparph" ||
-            sektor === "pengusahaes" ||
-            sektor === "kontraktor" ||
-            sektor === "perikanan" ||
-            sektor === "corporate"
-        ){
-            newIndustry++;
-        }
+        // 🔥 RESELLER
+        else if(resellerList.includes(sektor)){
 
-        else if(
-            sektor === "agenes" ||
-            sektor === "agenmakelar"
-        ){
             reseller++;
         }
 
-        else if(sektor === "produsenes"){
+        // 🔥 EXISTING PABRIK
+        else if(pabrikList.includes(sektor)){
+
             pabrik++;
+        }
+
+        // 🔥 SELAIN ITU = NEW SEGMENT
+        else{
+
+            newSegment++;
         }
 
     });
 
+    // ================= TOTAL ACTUAL =================
     const totalActual =
         government +
-        newIndustry +
         reseller +
-        pabrik;
+        pabrik +
+        newSegment;
 
+    // 🔥 TARGET
     const totalTarget = 70;
 
     let percent = (totalActual / totalTarget) * 100;
 
-    if(percent > 100) percent = 100;
+    if(percent > 100){
+        percent = 100;
+    }
 
     const el = document.getElementById("kpiSuccess");
-    animateCounterPercent(el, Math.round(percent), 1000);
+
+    animateCounterPercent(
+        el,
+        Math.round(percent),
+        1000
+    );
 }
 
 function updateRegionChart(){
@@ -2120,13 +2217,28 @@ function updateSektorChart(){
         return;
     }
 
+    // ================= MASTER SEGMENT =================
     const segmentMap = {
-        "Reseller/Kompetitor": ["Reseller","Agen/ Makelar","Kontraktor"],
-        "Government": ["Government"],
-        "Existing Pabrik": ["Produsen Es"],
-        "New Segment": ["RPA/RPH","Perikanan","Pengusaha","Corporate","Agen Es"]
+
+        "Reseller/Kompetitor": [
+            "Reseller",
+            "Agen/ Makelar",
+            "Agent / Makelar",
+            "Agent",
+            "Kontraktor"
+        ],
+
+        "Government": [
+            "Government"
+        ],
+
+        "Existing Pabrik": [
+            "Produsen Es",
+            "Ice Factory Owner"
+        ]
     };
 
+    // ================= TOTAL =================
     let segmentTotals = {
         "Reseller/Kompetitor": 0,
         "Government": 0,
@@ -2134,61 +2246,133 @@ function updateSektorChart(){
         "New Segment": 0
     };
 
+    // ================= HITUNG TOTAL =================
     rows.slice(1).forEach(row => {
-        let sektor = (row[3] || "").toString().trim();
+
+        let sektor = (row[3] || "")
+            .toString()
+            .trim();
+
+        if(!sektor || sektor === "-") return;
+
+        let matched = false;
 
         for(let segment in segmentMap){
+
             if(segmentMap[segment].includes(sektor)){
+
                 segmentTotals[segment]++;
+                matched = true;
             }
+        }
+
+        // 🔥 SELAIN YANG DIATAS = NEW SEGMENT
+        if(!matched){
+            segmentTotals["New Segment"]++;
         }
     });
 
+    // ================= ACTIVE SEGMENTS =================
     const activeSegments = Object.keys(segmentTotals)
         .filter(seg => segmentTotals[seg] > 0);
 
     if(activeSegments.length === 0){
+
         canvas.style.display = "none";
         empty.style.display = "flex";
+
         return;
     }
 
-    const sektorList = [
-        "Reseller","Agen/ Makelar","Kontraktor",
-        "Government",
-        "Produsen Es",
-        "RPA/RPH","Perikanan","Pengusaha","Corporate","Agen Es"
-    ];
-
-    let datasetMap = {};
-    sektorList.forEach(s => {
-        datasetMap[s] = new Array(activeSegments.length).fill(0);
-    });
+    // ================= SEMUA SEKTOR UNIK =================
+    const sektorList = [];
 
     rows.slice(1).forEach(row => {
 
-        let sektor = (row[3] || "").toString().trim();
+        let sektor = (row[3] || "")
+            .toString()
+            .trim();
+
+        if(
+            sektor &&
+            sektor !== "-" &&
+            !sektorList.includes(sektor)
+        ){
+            sektorList.push(sektor);
+        }
+    });
+
+    // ================= INIT DATASET =================
+    let datasetMap = {};
+
+    sektorList.forEach(sektor => {
+        datasetMap[sektor] =
+            new Array(activeSegments.length).fill(0);
+    });
+
+    // ================= MAPPING DATA =================
+    rows.slice(1).forEach(row => {
+
+        let sektor = (row[3] || "")
+            .toString()
+            .trim();
+
+        if(!sektor || sektor === "-") return;
 
         activeSegments.forEach((seg, i) => {
-            if(segmentMap[seg].includes(sektor)){
+
+            let matched = false;
+
+            // 🔥 CEK SEMUA MASTER CATEGORY
+            for(let segment in segmentMap){
+
+                if(segmentMap[segment].includes(sektor)){
+
+                    matched = true;
+
+                    if(seg === segment){
+
+                        datasetMap[sektor][i]++;
+                    }
+                }
+            }
+
+            // 🔥 FALLBACK NEW SEGMENT
+            if(!matched && seg === "New Segment"){
+
                 datasetMap[sektor][i]++;
             }
+
         });
 
     });
 
+    // ================= COLORS =================
     const colors = [
-        "#ff914d","#ffa94d","#ffc078",
-        "#4e73df",
-        "#4e6b50",
-        "#61adfd","#74c0fc","#a5d8ff","#339af0","#1c7ed6"
+        "#2d6a4f",
+        "#40916c",
+        "#52b788",
+        "#74c69d",
+        "#95d5b2",
+        "#1b4332",
+        "#2f855a",
+        "#40916c",
+        "#52b788",
+        "#74c69d",
+        "#95d5b2",
+        "#1b4332"
     ];
 
+    // ================= DATASETS =================
     const datasets = sektorList.map((sektor, i) => ({
+
         label: sektor,
+
         data: datasetMap[sektor],
-        backgroundColor: colors[i],
-        borderRadius:6
+
+        backgroundColor: colors[i % colors.length],
+
+        borderRadius: 6
     }));
 
     // ================= SHOW =================
@@ -2201,23 +2385,26 @@ function updateSektorChart(){
     canvas.style.opacity = 0;
 
     sektorChart = new Chart(ctx,{
+
         type:"bar",
+
         data:{
             labels: activeSegments,
             datasets: datasets
         },
+
         options:{
+
             indexAxis:"y",
+
             responsive:true,
             maintainAspectRatio:false,
 
-            // 🔥 animasi utama
             animation:{
                 duration:800,
                 easing:"easeOutQuart"
             },
 
-            // 🔥 grow dari kiri + stagger
             animations:{
                 x:{
                     from:0,
@@ -2226,26 +2413,32 @@ function updateSektorChart(){
             },
 
             scales:{
-                x:{ 
-                    stacked:true, 
-                    beginAtZero:true, 
+
+                x:{
+                    stacked:true,
+                    beginAtZero:true,
                     grid:{display:false},
                     border:{display:false}
                 },
-                y:{ 
-                    stacked:true, 
+
+                y:{
+                    stacked:true,
                     grid:{display:false},
                     border:{display:false}
                 }
             },
 
             plugins:{
-                legend:{ display:false },
+
+                legend:{
+                    display:false
+                },
 
                 tooltip:{
                     callbacks:{
                         title:(context)=>context[0].label,
-                        label:(context)=>`${context.dataset.label}: ${context.raw}`
+                        label:(context)=>
+                            `${context.dataset.label}: ${context.raw}`
                     }
                 }
             }
@@ -2254,8 +2447,10 @@ function updateSektorChart(){
 
     // 🔥 fade in
     setTimeout(() => {
+
         canvas.style.transition = "opacity 0.4s ease";
         canvas.style.opacity = 1;
+
     }, 50);
 }
 
@@ -2593,15 +2788,27 @@ function updateKPI(){
         return;
     }
 
-    rows.forEach(row => {
+    rows.slice(1).forEach(row => {
 
-        const progress = (row[row.length - 1] || "")
+        let progress = (row[row.length - 1] || "")
             .toString()
             .toLowerCase()
             .trim();
 
-        if(progress === "dalam proses") proses++;
-        if(progress === "lost") lost++;
+        // 🔥 SKIP "-"
+        if(progress === "-" || progress === ""){
+            return;
+        }
+
+        // 🔥 LOST
+        if(progress.includes("lost")){
+            lost++;
+        }
+
+        // 🔥 SELAIN LOST = DALAM PROSES
+        else{
+            proses++;
+        }
 
     });
 
@@ -2610,7 +2817,6 @@ function updateKPI(){
 
     animateCounter(elProses, proses);
     animateCounter(elLost, lost);
-
 }
 
 function updateProdukChart(){
@@ -2643,6 +2849,7 @@ function updateProdukChart(){
         let produk = (row[8] || "")
             .toString()
             .toLowerCase()
+            .replace(/ice/gi, "") 
             .replace(/\s+/g,"")
             .trim();
 
@@ -2662,9 +2869,12 @@ function updateProdukChart(){
     canvas.style.display = "block";
     empty.style.display = "none";
 
-    const labels = Object.keys(produkCount).map(p =>
-        p.charAt(0).toUpperCase() + p.slice(1)
-    );
+    const labels = Object.keys(produkCount).map(p => {
+
+        const clean = p.trim();
+
+        return clean.charAt(0).toUpperCase() + clean.slice(1);
+    });
 
     const values = Object.values(produkCount);
 
@@ -2867,9 +3077,11 @@ function updateProdukDominasiChart() {
 
         rows.slice(1).forEach(row => {
 
-            let produk = (row[8] || "") 
+            let produk = (row[8] || "")
                 .toString()
                 .toLowerCase()
+                .replace(/ice/gi, "") 
+                .replace(/\s+/g,"")
                 .trim();
 
             if (!produk || produk === "-") return;
@@ -2984,11 +3196,9 @@ function updateWilayahChart() {
                 .toString()
                 .toLowerCase()
                 .trim()
-                .replace(/\s+/g, "")
-                .replace(/[^a-z]/g, "");
 
             if (!wilayah || wilayah === "-") return;
-
+            wilayah = wilayah.replace(/\s+/g, " ");
             wilayahCount[wilayah] = (wilayahCount[wilayah] || 0) + 1;
         });
 
@@ -3084,9 +3294,8 @@ function updatePerformaSalesChart() {
     const container = document.getElementById("performaSalesContainer");
     if (!container) return;
 
-    const prosesCount = {};
-    const lostCount = {};
-    const unknownCount = {};
+    // 🔥 DINAMIS
+    const progressMap = {};
 
     Object.keys(dataCache).forEach(key => {
 
@@ -3094,7 +3303,7 @@ function updatePerformaSalesChart() {
             return;
         }
 
-        const pic = key.split("_")[0]; 
+        const pic = key.split("_")[0];
         const rows = dataCache[key];
 
         if (!rows || rows.length <= 1) return;
@@ -3103,92 +3312,135 @@ function updatePerformaSalesChart() {
 
             let progress = (row[9] || "")
                 .toString()
-                .toLowerCase()
                 .trim();
 
-            // 🔥 KLASIFIKASI
-            if (progress === "-" || progress === "" || progress === null) {
-                unknownCount[pic] = (unknownCount[pic] || 0) + 1;
+            // 🔥 UNKNOWN
+            if (progress === "" || progress === "-") {
+                progress = "Unknown";
             }
-            else if (progress === "lost") {
-                lostCount[pic] = (lostCount[pic] || 0) + 1;
-            } 
-            else {
-                prosesCount[pic] = (prosesCount[pic] || 0) + 1;
+
+            // 🔥 LOST NORMALIZE
+            else if (progress.toLowerCase().includes("lost")) {
+                progress = "Lost";
             }
+
+            // ================= INIT =================
+            if (!progressMap[progress]) {
+                progressMap[progress] = {};
+            }
+
+            // ================= COUNT =================
+            progressMap[progress][pic] =
+                (progressMap[progress][pic] || 0) + 1;
 
         });
 
     });
 
-    // ================= GABUNG PIC =================
-    const allPIC = Array.from(new Set([
-        ...Object.keys(prosesCount),
-        ...Object.keys(lostCount),
-        ...Object.keys(unknownCount)
-    ]));
+    // ================= ALL PIC =================
+    const allPIC = Array.from(new Set(
+        Object.values(progressMap)
+            .flatMap(obj => Object.keys(obj))
+    ));
 
     if (allPIC.length === 0) {
+
         container.innerHTML = `
             <div class="chart-empty">
                 Data performa sales belum tersedia
             </div>
         `;
+
         return;
     }
 
-    // ================= SORT =================
+    // ================= SORT TOTAL =================
     const sorted = allPIC
-        .map(pic => ({
-            pic,
-            total: (prosesCount[pic] || 0) + 
-                   (lostCount[pic] || 0) + 
-                   (unknownCount[pic] || 0)
-        }))
-        .sort((a, b) => b.total - a.total);
+        .map(pic => {
+
+            let total = 0;
+
+            Object.keys(progressMap).forEach(progress => {
+                total += progressMap[progress][pic] || 0;
+            });
+
+            return { pic, total };
+
+        })
+        .sort((a,b) => b.total - a.total);
 
     const labels = sorted.map(x => x.pic);
 
-    const prosesData = labels.map(pic => prosesCount[pic] || 0);
-    const lostData = labels.map(pic => lostCount[pic] || 0);
-    const unknownData = labels.map(pic => unknownCount[pic] || 0);
+    // ================= AUTO DATASETS =================
+    const greenPalette = [
+        "#2d6a4f",
+        "#40916c",
+        "#52b788",
+        "#74c69d",
+        "#95d5b2",
+        "#1b4332",
+        "#2f855a"
+    ];
 
-    // ================= RESET CANVAS =================
+    let greenIndex = 0;
+
+    const datasets = Object.keys(progressMap).map(progress => {
+
+        let bgColor;
+
+        // 🔥 LOST
+        if(progress.toLowerCase() === "lost"){
+            bgColor = "#d62828";
+        }
+
+        // 🔥 UNKNOWN
+        else if(progress.toLowerCase() === "unknown"){
+            bgColor = "#f77f00";
+        }
+
+        // 🔥 SELAIN ITU HIJAU
+        else{
+            bgColor = greenPalette[greenIndex % greenPalette.length];
+            greenIndex++;
+        }
+
+        return {
+
+            label: progress,
+
+            data: labels.map(pic =>
+                progressMap[progress][pic] || 0
+            ),
+
+            backgroundColor: bgColor,
+            borderRadius: 4
+        };
+    });
+
+    // ================= RESET =================
     container.innerHTML = `<canvas id="performaSalesChart"></canvas>`;
+
     const ctx = document.getElementById("performaSalesChart");
 
-    if (performaSalesChart && typeof performaSalesChart.destroy === "function") {
+    if (performaSalesChart &&
+        typeof performaSalesChart.destroy === "function") {
+
         performaSalesChart.destroy();
         performaSalesChart = null;
     }
 
     // ================= RENDER =================
     performaSalesChart = new Chart(ctx, {
+
         type: "bar",
+
         data: {
             labels,
-            datasets: [
-                {
-                    label: "Dalam Proses",
-                    data: prosesData,
-                    backgroundColor: "#4e6b50", // 🔵 biru
-                    borderRadius: 4
-                },
-                {
-                    label: "Lost",
-                    data: lostData,
-                    backgroundColor: "#e60000", // 🔴 merah
-                    borderRadius: 4
-                },
-                {
-                    label: "Unknown",
-                    data: unknownData,
-                    backgroundColor: "#f59f00", // 🟠 jingga
-                    borderRadius: 4
-                }
-            ]
+            datasets
         },
+
         options: {
+
             responsive: true,
             maintainAspectRatio: false,
 
@@ -3211,16 +3463,16 @@ function updatePerformaSalesChart() {
                 easing: "easeOutQuart"
             },
 
-            animations: {
-                y: { from: 0 }
-            },
-
             plugins: {
                 legend: {
-                    display: true,
-                    position: "bottom",
-                    labels: {
-                        boxWidth: 12
+                    display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context){
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
                     }
                 }
             }
@@ -3228,6 +3480,7 @@ function updatePerformaSalesChart() {
     });
 
     container.classList.remove("show");
+
     setTimeout(() => {
         container.classList.add("show");
     }, 100);
@@ -3247,10 +3500,6 @@ function updateSourceStackedChart() {
     }
 
     const sourceMap = {};
-    // format:
-    // {
-    //   "Ana": { "kanvas online": 10, "leads pribadi": 5 }
-    // }
 
     Object.keys(dataCache).forEach(key => {
 
@@ -3812,34 +4061,27 @@ function handleExcel(e){
 function processExcelData(rows){
 
     if(!rows || rows.length < 2){
-        alert("File kosong");
+        alert("File kosong!");
         return;
     }
 
-    // =========================
-    // 🔥 1. DETECT HEADER OTOMATIS
-    // =========================
+    // ================= HEADER DETECT =================
     const headerIndex = rows.findIndex(row =>
         row && row.some(cell =>
-            cell && cell.toString().toLowerCase().includes("nama")
+            cell && cell.toString().toLowerCase().includes("name")
         )
     );
 
     if(headerIndex === -1){
-        alert("Header tidak ditemukan");
+        alert("Header tidak ditemukan!");
         return;
     }
 
     const rawHeader = rows[headerIndex];
 
-    // =========================
-    // 🔥 2. NORMALISASI HEADER
-    // =========================
-    function cleanHeader(header){
-        return header
-            .toString()
-            .replace(/\s+/g, " ")
-            .replace(/\u00A0/g, " ")
+    function cleanHeader(h){
+        return h.toString()
+            .replace(/\s+/g," ")
             .trim()
             .toLowerCase();
     }
@@ -3848,70 +4090,144 @@ function processExcelData(rows){
 
     console.log("HEADER:", header);
 
-    // =========================
-    // 🔥 3. MAPPING FLEXIBLE
-    // =========================
-    function findIndex(keyword){
-        return header.findIndex(h => h.includes(keyword));
+    // ================= FIND EXACT =================
+    function findExact(keys){
+        for(let key of keys){
+            const idx = header.findIndex(h => h === key);
+            if(idx !== -1) return idx;
+        }
+        return -1;
     }
 
+    function findLoose(keys){
+        for(let key of keys){
+            const idx = header.findIndex(h => h.includes(key));
+            if(idx !== -1) return idx;
+        }
+        return -1;
+    }
+
+    // ================= MAPPING =================
     const colIndex = {
-        crc: findIndex("crc"),
-        nama: findIndex("nama"),
-        region: findIndex("region"),
-        sektor: findIndex("sektor"),
-        status: findIndex("status"),
-        tanggal: findIndex("tanggal"),
-        source: findIndex("source"),
-        notelp: findIndex("telp"),
-        produk: findIndex("produk"),
-        progress: findIndex("progress")
+
+        crc: findExact(["crc"]),
+        nama: findLoose(["nama","lead name"]),
+        region: findLoose(["region","city"]),
+        sektor: findLoose(["sektor","customer type"]),
+        status: findExact(["status"]),
+        tanggal: findLoose(["tanggal contact","created at"]),
+        source: findLoose(["source data","source"]),
+        notelp: findLoose(["no telp","telephone"]),
+        produk: findLoose(["produk","needs"]),
+        progress: findLoose(["progress","act status"])
     };
 
     console.log("COL INDEX:", colIndex);
 
-    // =========================
-    // 🔥 4. AMBIL DATA SETELAH HEADER
-    // =========================
     const dataRows = rows.slice(headerIndex + 1);
 
-    // =========================
-    // 🔥 5. SAFE GET VALUE
-    // =========================
     function getVal(row, index){
         if(index === -1) return "-";
         const val = row[index];
-
         if(val === undefined || val === null) return "-";
-
         return val.toString().trim() === "" ? "-" : val;
     }
 
-    // =========================
-    // 🔥 6. PARSE DATA
-    // =========================
+    function parseDate(str){
+        if(!str) return new Date(0);
+
+        if(str.includes("/")){
+            const parts = str.split("/");
+            if(parts.length !== 3) return new Date(0);
+            return new Date(parts[2], parts[1]-1, parts[0]);
+        }
+
+        return new Date(str);
+    }
+
+    function getWeek(dateStr){
+
+        if(!dateStr || dateStr === "-"){
+            return "-";
+        }
+
+        let d;
+
+        // FORMAT DD/MM/YYYY atau DD-MM-YYYY
+        if(dateStr.includes("/") || dateStr.includes("-")){
+
+            const sep = dateStr.includes("/") ? "/" : "-";
+
+            const parts = dateStr.split(sep);
+
+            if(parts.length !== 3){
+                return "-";
+            }
+
+            d = new Date(parts[2], parts[1]-1, parts[0]);
+
+        } else {
+
+            d = new Date(dateStr);
+
+        }
+
+        if(isNaN(d)){
+            return "-";
+        }
+
+        const day = d.getDate();
+
+        if(day <= 7) return "week 1";
+        if(day <= 14) return "week 2";
+        if(day <= 21) return "week 3";
+        if(day <= 28) return "week 4";
+
+        return "week 5";
+    }    
+
+    // ================= PARSE DATA =================
     const cleanData = dataRows
         .filter(row => row && row.length > 0)
-        .map(row => ({
+        .map(row => {
 
-            crc: getVal(row, colIndex.crc),
-            nama: getVal(row, colIndex.nama),
-            region: getVal(row, colIndex.region),
-            sektor: getVal(row, colIndex.sektor),
-            status: getVal(row, colIndex.status),
-            tanggal: getVal(row, colIndex.tanggal),
-            source: getVal(row, colIndex.source),
-            notelp: getVal(row, colIndex.notelp),
-            produk: getVal(row, colIndex.produk),
-            progress: getVal(row, colIndex.progress)
+            const rawTanggal = getVal(row, colIndex.tanggal);
 
-        }));
+            return {
+
+                crc: getWeek(rawTanggal),
+
+                nama: getVal(row, colIndex.nama),
+                region: getVal(row, colIndex.region),
+                sektor: getVal(row, colIndex.sektor),
+
+                // 🔥 STATUS SEKARANG AMAN
+                status: colIndex.status === -1 ? "-" : getVal(row, colIndex.status),
+
+                tanggal: rawTanggal,
+
+                source: getVal(row, colIndex.source),
+                notelp: getVal(row, colIndex.notelp),
+                produk: getVal(row, colIndex.produk),
+
+                // 🔥 PROGRESS AMBIL DARI ACT STATUS
+                progress: getVal(row, colIndex.progress)
+            };
+        });
+
+    // ================= SORT =================
+    cleanData.sort((a,b)=>{
+
+        const getNum = val => {
+            const m = val.match(/\d+/);
+            return m ? parseInt(m[0]) : 0;
+        };
+
+        return getNum(a.crc) - getNum(b.crc);
+    });
 
     console.log("DATA FINAL:", cleanData.slice(0,5));
 
-    // =========================
-    // 🔥 7. KIRIM DATA
-    // =========================
     handleInsertDecision(cleanData);
 }
 
@@ -4008,7 +4324,7 @@ function exportAllMonths() {
 }
 
 // ================= TAMBAH DATA =================
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxh9yU9NyiOi3srlmu5jSa-Mxvtc9Pi-zq1lamXeEJKKH-U2T1KNCEV6NJ7VlhAvZZR/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzz8ZrQlNImWOLv3rN1shyTsaAPAL_BMU2622pGETuc6H10E6gjLaGyVYJzB7yW-MH/exec";
 
 function openAddModal() {
 
@@ -4224,26 +4540,6 @@ function closeAddMemberModal(){
     document.getElementById("modalOverlay").style.display="none";
 }
 
-function addMemberToSidebar(nick){
-
-    const menu = document.querySelector(".menu");
-
-    const li = document.createElement("li");
-
-    const a = document.createElement("a");
-
-    a.href="#";
-    a.innerText = nick;
-
-    a.onclick = function(){
-        loadPage("laporan", nick, a);
-    };
-
-    li.appendChild(a);
-
-    menu.appendChild(li);
-
-}
 function startKpiLoadingCounter(elementId) {
     const el = document.getElementById(elementId);
     if (!el) return null;
@@ -4302,7 +4598,6 @@ async function updateHomeTotalProses() {
 
     for (const sales of salesNames) {
 
-        // 🔥 PILIH BULAN (FILTER)
         const monthsToProcess = (globalMonth === "All") ? months : [globalMonth];
 
         for (const month of monthsToProcess) {
@@ -4650,9 +4945,9 @@ async function deletePIC(picName, element){
 
         if(result.status === "pic_deleted"){
 
-            element.remove();
-
             alert("Anggota berhasil dihapus");
+
+            await loadSidebarMembers();
 
         }
 
@@ -4667,36 +4962,51 @@ async function deletePIC(picName, element){
 
 async function submitNewMember(){
 
-    const fullname = document.getElementById("memberFullName").value;
-    const nickname = document.getElementById("memberNick").value;
+    const fullname =
+        document.getElementById("memberFullName").value;
+
+    const nickname =
+        document.getElementById("memberNick").value;
 
     if(!fullname || !nickname){
+
         alert("Isi seluruh data terlebih dahulu!");
         return;
     }
 
     try{
 
-        await fetch(WEB_APP_URL,{
+        const response = await fetch(WEB_APP_URL,{
             method:"POST",
             body: JSON.stringify({
                 action:"add_member",
-                fullname:fullname,
-                nickname:nickname
+                fullname: fullname,
+                nickname: nickname
             })
         });
 
-        alert("Anggota berhasil ditambahkan");
+        const result = await response.json();
 
-        closeAddMemberModal();
+        console.log(result);
 
-        addMemberToSidebar(nickname);
+        if(result.status === "member_added"){
+
+            alert("Anggota berhasil ditambahkan");
+
+            closeAddMemberModal();
+
+            await loadSidebarMembers();
+
+        }else{
+
+            alert("Gagal tambah member");
+        }
 
     }catch(err){
+
         console.error(err);
         alert("Gagal tambah member");
     }
-
 }
 
 async function saveEditedData() {
@@ -4714,7 +5024,6 @@ async function saveEditedData() {
 
         const tds = tr.querySelectorAll("td");
 
-        // mulai dari index 1 supaya skip kolom No
         for (let i = 1; i < tds.length; i++) {
             rowData.push(tds[i].innerText.trim() || "-");
         }
@@ -4888,6 +5197,7 @@ function toggleSaveMenu() {
 }
 
 window.onload = function() {
+    loadSidebarMembers();
     loadPage("home");
 };
 
