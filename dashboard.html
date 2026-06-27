@@ -2059,9 +2059,8 @@ function updateSuccessRate(){
         pabrik +
         newSegment;
 
-    // 🔥 TARGET
+    
     const totalTarget = 70;
-
     let percent = (totalActual / totalTarget) * 100;
 
     if(percent > 100){
@@ -2217,28 +2216,12 @@ function updateSektorChart(){
         return;
     }
 
-    // ================= MASTER SEGMENT =================
     const segmentMap = {
-
-        "Reseller/Kompetitor": [
-            "Reseller",
-            "Agen/ Makelar",
-            "Agent / Makelar",
-            "Agent",
-            "Kontraktor"
-        ],
-
-        "Government": [
-            "Government"
-        ],
-
-        "Existing Pabrik": [
-            "Produsen Es",
-            "Ice Factory Owner"
-        ]
+        "Reseller/Kompetitor": ["Reseller","Agen/ Makelar","Agent / Makelar","Agent","Kontraktor"],
+        "Government": ["Government"],
+        "Existing Pabrik": ["Produsen Es", "Ice Factory Owner","Ice Factory"]
     };
 
-    // ================= TOTAL =================
     let segmentTotals = {
         "Reseller/Kompetitor": 0,
         "Government": 0,
@@ -2259,7 +2242,13 @@ function updateSektorChart(){
 
         for(let segment in segmentMap){
 
-            if(segmentMap[segment].includes(sektor)){
+            const sektorLower = sektor.toLowerCase();
+
+            const isMatch = segmentMap[segment].some(item =>
+                sektorLower.includes(item.toLowerCase())
+            );
+
+            if(isMatch){
 
                 segmentTotals[segment]++;
                 matched = true;
@@ -2326,7 +2315,13 @@ function updateSektorChart(){
             // 🔥 CEK SEMUA MASTER CATEGORY
             for(let segment in segmentMap){
 
-                if(segmentMap[segment].includes(sektor)){
+                const sektorLower = sektor.toLowerCase();
+
+                const isMatch = segmentMap[segment].some(item =>
+                    sektorLower.includes(item.toLowerCase())
+                );
+
+                if(isMatch){
 
                     matched = true;
 
@@ -2565,7 +2560,6 @@ function updateTreemapWilayahSektor() {
     const key = `${currentName}_${currentMonth}`;
     const rows = dataCache[key] || [];
 
-    // 🔥 destroy lama
     if (treemapChart) {
         treemapChart.destroy();
         treemapChart = null;
@@ -2865,18 +2859,20 @@ function updateProdukChart(){
         return;
     }
 
-    // ================= ADA DATA =================
     canvas.style.display = "block";
     empty.style.display = "none";
 
-    const labels = Object.keys(produkCount).map(p => {
+    const sortedProduk = Object.entries(produkCount)
+        .sort((a,b) => b[1] - a[1]);
 
-        const clean = p.trim();
+    const labels = sortedProduk.map(([produk]) => {
+
+        const clean = produk.trim();
 
         return clean.charAt(0).toUpperCase() + clean.slice(1);
     });
 
-    const values = Object.values(produkCount);
+    const values = sortedProduk.map(([_, total]) => total);
 
     const ctx = canvas.getContext("2d");
 
@@ -2947,7 +2943,6 @@ function updateSektorDominasiChart() {
 
     Object.keys(dataCache).forEach(key => {
 
-        // 🔥 FILTER BULAN (SAMA PERSIS)
         if (globalMonth !== "All" && !key.includes("_" + globalMonth)) {
             return;
         }
@@ -2955,16 +2950,95 @@ function updateSektorDominasiChart() {
         const rows = dataCache[key];
         if (!rows || rows.length <= 1) return;
 
+        // ================= HEADER =================
+        const header = rows[0].map(h =>
+            (h || "").toString().toLowerCase().trim()
+        );
+
+        // ================= FIND KOLOM =================
+        const sektorIndex = header.findIndex(h =>
+            h.includes("sektor")
+        );
+
+        const customerTypeIndex = header.findIndex(h =>
+            h.includes("customer type")
+        );
+
+        const industryIndex = header.findIndex(h =>
+            h.includes("industry")
+        );
+
+        // ================= CEK CUSTOMER TYPE KOSONG =================
+        let customerTypeKosong = 0;
+        let totalRows = 0;
+
+        if(customerTypeIndex !== -1){
+
+            rows.slice(1).forEach(row => {
+
+                const val = (row[customerTypeIndex] || "")
+                    .toString()
+                    .trim();
+
+                totalRows++;
+
+                if(!val || val === "-"){
+                    customerTypeKosong++;
+                }
+            });
+        }
+
+        let useIndustry = false;
+
+        if(
+            customerTypeIndex !== -1 &&
+            totalRows > 0
+        ){
+
+            const kosongPercent =
+                (customerTypeKosong / totalRows) * 100;
+
+            // 🔥 kalau 70% kosong
+            if(kosongPercent >= 70){
+                useIndustry = true;
+            }
+        }
+
+        // ================= LOOP DATA =================
         rows.slice(1).forEach(row => {
 
-            let sektor = (row[3] || "")
+            let sektor = "";
+
+            // 🔥 PRIORITAS 1 = SEKTOR
+            if(sektorIndex !== -1){
+
+                sektor = row[sektorIndex] || "";
+            }
+
+            // 🔥 PRIORITAS 2 = CUSTOMER TYPE
+            else if(
+                customerTypeIndex !== -1 &&
+                !useIndustry
+            ){
+
+                sektor = row[customerTypeIndex] || "";
+            }
+
+            // 🔥 PRIORITAS 3 = INDUSTRY
+            else if(industryIndex !== -1){
+
+                sektor = row[industryIndex] || "";
+            }
+
+            sektor = sektor
                 .toString()
-                .toLowerCase()
-                .trim();
+                .trim()
+                .toLowerCase();
 
-            if (!sektor || sektor === "-") return;
+            if(!sektor || sektor === "-") return;
 
-            sektorCount[sektor] = (sektorCount[sektor] || 0) + 1;
+            sektorCount[sektor] =
+                (sektorCount[sektor] || 0) + 1;
         });
 
     });
@@ -4113,7 +4187,9 @@ function processExcelData(rows){
         crc: findExact(["crc"]),
         nama: findLoose(["nama","lead name"]),
         region: findLoose(["region","city"]),
-        sektor: findLoose(["sektor","customer type"]),
+        sektor: findLoose(["sektor"]),
+        customerType: findLoose(["customer type"]),
+        industry: findLoose(["industry"]),
         status: findExact(["status"]),
         tanggal: findLoose(["tanggal contact","created at"]),
         source: findLoose(["source data","source"]),
@@ -4192,6 +4268,42 @@ function processExcelData(rows){
         .map(row => {
 
             const rawTanggal = getVal(row, colIndex.tanggal);
+            let sektorValue = "-";
+            if (colIndex.sektor !== -1) {
+
+                sektorValue = getVal(row, colIndex.sektor);
+            }
+
+            if (
+                (!sektorValue || sektorValue === "-") &&
+                colIndex.customerType !== -1
+            ) {
+
+                sektorValue = getVal(row, colIndex.customerType);
+            }
+
+            if (
+                (!sektorValue || sektorValue === "-") &&
+                colIndex.industry !== -1
+            ) {
+
+                sektorValue = getVal(row, colIndex.industry);
+            }
+
+            // ================= NORMALISASI SEKTOR =================
+            const sektorLower = sektorValue
+                .toString()
+                .toLowerCase()
+                .trim();
+
+            // 🔥 semua agent/agen jadi reseller
+            if (
+                sektorLower.includes("agen") ||
+                sektorLower.includes("agent")
+            ) {
+
+                sektorValue = "Reseller";
+            }
 
             return {
 
@@ -4199,10 +4311,14 @@ function processExcelData(rows){
 
                 nama: getVal(row, colIndex.nama),
                 region: getVal(row, colIndex.region),
-                sektor: getVal(row, colIndex.sektor),
+
+                // 🔥 hasil final sektor
+                sektor: sektorValue,
 
                 // 🔥 STATUS SEKARANG AMAN
-                status: colIndex.status === -1 ? "-" : getVal(row, colIndex.status),
+                status: colIndex.status === -1
+                    ? "-"
+                    : getVal(row, colIndex.status),
 
                 tanggal: rawTanggal,
 
