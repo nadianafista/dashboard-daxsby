@@ -1,0 +1,298 @@
+function safe(val){
+  if (val === undefined || val === null) return "-";
+  const s = val.toString().trim();
+  return s === "" ? "-" : s;
+}
+
+function doPost(e) {
+
+  const ss = SpreadsheetApp.openById("1M1MnLJgcbqYxM3BecqF88K2GvpBqZb8kWRaQXFIhnMw");
+
+  let data = {};
+  if (e.postData && e.postData.contents) {
+    data = JSON.parse(e.postData.contents);
+  }
+// ================= TAMBAH ANGGOTA =================
+if(data.action === "add_member"){
+
+    const picFix =
+      data.nickname.toUpperCase();
+
+    const sheetName =
+      "JAN (" + picFix + ")";
+
+    let memberSheet =
+      ss.getSheetByName(sheetName);
+
+    if(!memberSheet){
+
+      memberSheet =
+        ss.insertSheet(sheetName);
+
+      memberSheet.appendRow([
+        "crc",
+        "Nama",
+        "Region",
+        "Sektor",
+        "Status",
+        "Tanggal contact",
+        "Source Data",
+        "No Telp",
+        "Produk",
+        "Progress"
+      ]);
+
+      memberSheet
+        .getRange(1,1,1,10)
+        .setFontWeight("bold");
+
+      memberSheet.autoResizeColumns(1,10);
+    }
+
+    return ContentService
+      .createTextOutput(
+        JSON.stringify({
+          status:"member_added"
+        })
+      )
+      .setMimeType(ContentService.MimeType.JSON);
+}
+  const bulanFix = data.bulan ? data.bulan.substring(0,3).toUpperCase() : "";
+  const picFix = data.pic ? data.pic.toUpperCase() : "";
+  const sheetName = bulanFix + " (" + picFix + ")";
+
+  let sheet = ss.getSheetByName(sheetName);
+
+  // ================= BUAT SHEET =================
+  if (!sheet && bulanFix && picFix) {
+
+    sheet = ss.insertSheet(sheetName);
+
+    sheet.appendRow([
+      "crc",
+      "Nama",
+      "Region",
+      "Sektor",
+      "Status",
+      "Tanggal contact",
+      "Source Data",
+      "No Telp",
+      "Produk",
+      "Progress"
+    ]);
+
+    sheet.getRange(1,1,1,10).setFontWeight("bold");
+    sheet.autoResizeColumns(1,10);
+  }
+
+  // ================= HAPUS PIC =================
+  if (data.action === "delete_pic") {
+
+    const picFix = data.pic.toUpperCase();
+    const sheets = ss.getSheets();
+
+    sheets.forEach(sheet => {
+      const name = sheet.getName();
+      if (name.includes("(" + picFix + ")")) {
+        ss.deleteSheet(sheet);
+      }
+    });
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "pic_deleted"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // ================= HAPUS ROW =================
+  if (data.action === "delete") {
+
+    const rowNumber = parseInt(data.row);
+
+    if (!rowNumber || rowNumber < 2) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Row tidak valid"
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    sheet.deleteRow(rowNumber);
+
+    if (sheet.getLastRow() <= 1) {
+      ss.deleteSheet(sheet);
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          status: "deleted_and_sheet_removed"
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "deleted"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // ================= UPDATE =================
+  if (data.action === "update") {
+
+    const updates = data.data;
+
+    updates.forEach(item => {
+      const rowNumber = item.row;
+      const values = item.values;
+      sheet.getRange(rowNumber, 1, 1, values.length).setValues([values]);
+    });
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "updated"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // ================= BULK INSERT =================
+  if(data.action === "bulk_insert"){
+
+    if(data.reset){
+      const lastRow = sheet.getLastRow();
+      if(lastRow > 1){
+        sheet.getRange(2,1,lastRow-1,10).clearContent();
+      }
+    }
+
+    const values = data.data.map(item => ([
+      safe(item.crc),
+      safe(item.nama),
+      safe(item.region),
+      safe(item.sektor),
+      safe(item.status),
+      safe(item.tanggal),
+      safe(item.source),
+      safe(item.notelp),
+      safe(item.produk),
+      safe(item.progress)
+    ]));
+
+    // DEBUG (opsional)
+    Logger.log("DATA MASUK: " + JSON.stringify(values.slice(0,3)));
+
+    sheet.getRange(sheet.getLastRow()+1,1,values.length,10)
+        .setValues(values);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status:"success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // ================= SINGLE INSERT =================
+  sheet.appendRow([
+    safe(data.crc),
+    safe(data.nama),
+    safe(data.region),
+    safe(data.sektor),
+    safe(data.status),
+    safe(data.tanggal),
+    safe(data.source),
+    safe(data.notelp),
+    safe(data.produk),
+    safe(data.progress)
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({status: "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+
+  const ss = SpreadsheetApp.openById("1M1MnLJgcbqYxM3BecqF88K2GvpBqZb8kWRaQXFIhnMw");
+
+  // ================= AMBIL SHEETS =================
+  if (e.parameter.action === "get_all_sheets") {
+
+    const sheets = ss.getSheets();
+
+    const names = sheets.map(s => s.getName());
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        status: "success",
+        data: names
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }  
+  // ================= DELETE PIC VIA GET (ANTI CORS) =================
+  if (e.parameter.action === "delete_pic") {
+
+    const picFix = e.parameter.pic.toUpperCase();
+    const sheets = ss.getSheets();
+
+    sheets.forEach(sheet => {
+
+      const name = sheet.getName();
+
+      if (name.includes("(" + picFix + ")")) {
+        ss.deleteSheet(sheet);
+      }
+
+    });
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        status: "pic_deleted"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  if (!e.parameter || !e.parameter.bulan || !e.parameter.pic) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        status: "error",
+        message: "Parameter tidak lengkap"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const bulanFix = e.parameter.bulan.substring(0,3).toUpperCase();
+  const picFix = e.parameter.pic.toUpperCase();
+
+  const sheetName = bulanFix + " (" + picFix + ")";
+  const sheet = ss.getSheetByName(sheetName);
+
+  if (!sheet) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "empty" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  let data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+
+    const cell = data[i][5];
+
+    if (cell instanceof Date) {
+      data[i][5] = Utilities.formatDate(
+        cell,
+        "GMT+7",
+        "dd-MM-yyyy"
+      );
+    }
+
+    else if (typeof cell === "string" && cell.includes("T")) {
+      const dateObj = new Date(cell);
+      data[i][5] = Utilities.formatDate(
+        dateObj,
+        "GMT+7",
+        "dd-MM-yyyy"
+      );
+    }
+
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      status: "success",
+      data: data
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
