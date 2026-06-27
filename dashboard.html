@@ -141,12 +141,11 @@ body {
 
 .home-split-vertical{
     display:grid;
-    grid-template-rows: auto auto; /* ⬅️ ini kunci */
+    grid-template-rows: auto auto; 
     gap:16px;
-    align-content: flex-start; /* biar ga stretch full */
+    align-content: flex-start; 
 }
 
-/* ===== HOVER EFFECT KHUSUS CHART HOME ===== */
 .home-chart-box {
     transition: all 0.25s ease;
 }
@@ -195,20 +194,6 @@ body {
     color:#4e6b50;
 }
 
-/* .btn-export {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 13px;
-    border-radius: 18px;
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: bold;
-    height: 30px;               
-    display: flex;
-    align-items: center;      
-}  */
-
 .dashboard-grid{
     display:grid;
 
@@ -249,8 +234,8 @@ body {
 
 .chart-pie .vertical-wrapper{
     display:grid;
-    grid-template-columns: 1fr; /* ⬅️ jadi 1 kolom */
-    grid-template-rows: 1fr 1fr; /* ⬅️ jadi 2 baris */
+    grid-template-columns: 1fr; 
+    grid-template-rows: 1fr 1fr; 
 }
 
 .chart-card{
@@ -312,8 +297,8 @@ body {
     font-size:10px;
     letter-spacing:0.4px;
     text-transform:uppercase;
-    color:#4e6b50; /* 🔥 jadi hijau */
-    font-weight:600; /* biar lebih tegas */
+    color:#4e6b50; 
+    font-weight:600; 
 }
 
 .kpi-value{
@@ -333,7 +318,7 @@ body {
     gap:20px;
     width:100%;
     height:100%;
-    align-items:stretch; /* ⬅️ penting */
+    align-items:stretch;
 }
 
 .chart-container{
@@ -351,14 +336,14 @@ body {
     font-weight:600;
     color:#4e6b50;
     margin-bottom:10px;
-    text-align:center; /* 🔥 ini kuncinya */
+    text-align:center; 
 }
 
 .chart-box{
     position:relative;
     width:100%;
     height: 220px;
-    max-height: 220px; /* ⬅️ FIX biar ga collapse sebelum chart load */
+    max-height: 220px; 
 }
 .chart-box {
     margin-top: auto;
@@ -398,7 +383,7 @@ body {
 
 .chart-pie .chart-box{
     width: 100%;
-    height: 225px; /* lebih gede */
+    height: 225px; 
     max-width: none;
     max-height: none;
     margin:auto;
@@ -469,7 +454,6 @@ body {
     background: rgba(255,255,255,0.25);
 }
 
-/* Garis indikator aktif kiri */
 .menu a.active::before {
     content: "";
     position: absolute;
@@ -715,7 +699,7 @@ tbody tr:nth-child(even) {
 }
 
 .add-btn:hover {
-    background: #1074e0; /* diperbaiki */
+    background: #1074e0; 
     transform: translateY(-2px);
 }
 
@@ -784,9 +768,9 @@ tbody tr:nth-child(even) {
     background: #e53935;
     color: white;
     border: none;
-    padding: 8px 14px;   /* samakan */
-    border-radius: 18px; /* samakan */
-    font-size: 12px;     /* samakan */
+    padding: 8px 14px;  
+    border-radius: 18px; 
+    font-size: 12px;     
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -829,38 +813,32 @@ tbody tr:nth-child(even) {
     z-index: 999;
 }
 
-/* Saat aktif */
 .save-menu.show {
     display: block;
     transform: translateY(0);
     opacity: 1;
 }
 
-/* Opsi */
 .save-option {
     padding: 9px 14px;
-    font-size: 12px; /* diperkecil */
+    font-size: 12px; 
     color: #333;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-/* Hover efek */
 .save-option:hover {
-    background: #e8f2ff;   /* biru soft */
-    color: #0d6efd;        /* biru pekat */
-    padding-left: 18px;    /* efek geser */
+    background: #e8f2ff;   
+    color: #0d6efd;        
+    padding-left: 18px;    
 }
 
-/* Divider */
 .save-divider {
     height: 1px;
     background: #eee;
 }
 
 /* ================= STICKY KOLOM NO ================= */
-
-/* Body kolom No */
 #dataTable td:first-child {
     position: sticky;
     left: 0;
@@ -869,7 +847,6 @@ tbody tr:nth-child(even) {
     border-right: 1px solid #e0e0e0;
 }
 
-/* Header kolom No */
 #dataTable th:first-child {
     position: sticky;
     left: 0;
@@ -908,7 +885,6 @@ tbody tr:nth-child(even) {
     width:300px;
 }
 
-/* OVERLAY BACKGROUND */
 .modal-overlay{
     position: fixed;
     top:0;
@@ -926,17 +902,12 @@ tbody tr:nth-child(even) {
     z-index:9999;
 }
 
-/* POPUP BOX */
 .modal-box{
-
     background:#ffffff;
     width:360px;
     padding:30px;
-
     border-radius:14px;
-
     box-shadow:0 10px 30px rgba(0,0,0,0.25);
-
     animation:popupFade 0.25s ease;
 }
 
@@ -945,7 +916,6 @@ tbody tr:nth-child(even) {
     font-size:22px;
 }
 
-/* LABEL */
 .modal-box label{
     font-size:14px;
     font-weight:600;
@@ -954,31 +924,22 @@ tbody tr:nth-child(even) {
     margin-bottom:6px;
 }
 
-/* INPUT */
 .modal-box input{
-
     width:100%;
     padding:10px;
-
     border-radius:6px;
     border:1px solid #ccc;
-
     font-size:14px;
 }
 
-/* BUTTON CONTAINER */
 .modal-buttons{
-
     display:flex;
     justify-content:flex-end;
     gap:10px;
-
     margin-top:22px;
 }
 
-/* BUTTON STYLE */
 .btn-cancel{
-
     padding:8px 16px;
     border-radius:8px;
     border:none;
@@ -988,11 +949,9 @@ tbody tr:nth-child(even) {
 }
 
 .btn-add{
-
     padding:8px 18px;
     border-radius:8px;
     border:none;
-
     background:#4f9df7;
     color:white;
     cursor:pointer;
@@ -1269,15 +1228,13 @@ async function preloadAllSalesAllMonths() {
     });
 
     await Promise.all(promises);
-
-    // 🔥 update chart setelah semua data siap
     updateSektorDominasiChart();
     updateProdukDominasiChart();
     updateWilayahChart();
     updatePerformaSalesChart();
     updateMultiLineChart();
     updateSourceStackedChart();
-    console.log("🔥 Semua data ALL SALES + ALL MONTH loaded");
+    console.log("Semua data ALL SALES + ALL MONTH loaded");
 }
 
 function getAllSalesNames() {
@@ -1291,7 +1248,6 @@ function changeGlobalMonth(){
     const select = document.getElementById("globalMonthFilter");
     globalMonth = select.value;
 
-    // reload semua chart home
     updateHomeTotalProses();
     updateHomeTotalLost();
     updateHomeTotalLeads();
@@ -1352,7 +1308,6 @@ function loadPage(page, name = null, el = null) {
 
                     </div>
 
-                    <!-- 🔥 GARIS FULL -->
                     <div style="
                         border-bottom:2px solid #4e6b50;
                         margin-top:6px;
@@ -1718,7 +1673,6 @@ async function loadSidebarMembers(){
 
     if(!menu) return;
 
-    // 🔥 RESET
     menu.innerHTML = `
         <li>
             <a href="#"
@@ -1739,7 +1693,6 @@ async function loadSidebarMembers(){
 
         if(result.status !== "success") return;
 
-        // 🔥 AMBIL PIC UNIK
         const uniquePIC = [];
 
         result.data.forEach(sheetName => {
@@ -1759,7 +1712,6 @@ async function loadSidebarMembers(){
             }
         });
 
-        // 🔥 RENDER
         uniquePIC.forEach(pic => {
 
             menu.innerHTML += `
@@ -1811,7 +1763,7 @@ async function loadMonth(month) {
                 renderFilteredTable(dataCache[key]);
             }
 
-            refreshAllCharts(); // 🔥 hanya sekali
+            refreshAllCharts(); 
             return;
         }
     }
@@ -1911,7 +1863,6 @@ document.querySelector(".main").addEventListener("scroll", function () {
     const laporan = document.getElementById("laporanSection");
     const rect = laporan.getBoundingClientRect();
 
-    // 🔥 kalau bagian atas laporan sudah hampir masuk layar
     if (rect.top < 200 && rect.top > 0) {
 
         isAutoScrolling = true;
@@ -1947,7 +1898,6 @@ function cleanValue(value) {
     return value;
 }
 
-// ================= FUNGSI CHART DASHBOARD PIC =================
 function animateCounterPercent(element, target, duration = 900){
 
     let startTime = null;
@@ -1990,7 +1940,6 @@ function updateSuccessRate(){
 
     const rows = dataCache[key];
 
-    // ================= MASTER CATEGORY =================
     const resellerList = [
         "reseller",
         "agen/makelar",
@@ -2008,7 +1957,6 @@ function updateSuccessRate(){
         "icefactoryowner"
     ];
 
-    // ================= TOTAL =================
     let government = 0;
     let reseller = 0;
     let pabrik = 0;
@@ -2026,25 +1974,21 @@ function updateSuccessRate(){
             return;
         }
 
-        // 🔥 GOVERNMENT
         if(governmentList.includes(sektor)){
 
             government++;
         }
 
-        // 🔥 RESELLER
         else if(resellerList.includes(sektor)){
 
             reseller++;
         }
 
-        // 🔥 EXISTING PABRIK
         else if(pabrikList.includes(sektor)){
 
             pabrik++;
         }
 
-        // 🔥 SELAIN ITU = NEW SEGMENT
         else{
 
             newSegment++;
@@ -2091,7 +2035,6 @@ function updateRegionChart(){
         regionChart = null;
     }
 
-    // ================= EMPTY =================
     if(rows.length <= 1){
         canvas.style.display = "none";
         empty.style.display = "flex";
@@ -2123,7 +2066,6 @@ function updateRegionChart(){
         return;
     }
 
-    // ================= SHOW =================
     canvas.style.display = "block";
     empty.style.display = "none";
 
@@ -2152,13 +2094,11 @@ function updateRegionChart(){
             responsive:true,
             maintainAspectRatio:false,
 
-            // 🔥 animasi utama
             animation:{
                 duration:800,
                 easing:"easeOutQuart"
             },
 
-            // 🔥 grow dari kiri
             animations:{
                 x:{
                     from:0,
@@ -2184,7 +2124,6 @@ function updateRegionChart(){
         }
     });
 
-    // 🔥 fade in
     setTimeout(() => {
         canvas.style.transition = "opacity 0.4s ease";
         canvas.style.opacity = 1;
@@ -2202,14 +2141,11 @@ function updateSektorChart(){
     const empty = document.getElementById("sektorEmpty");
 
     if(!canvas) return;
-
-    // 🔥 destroy chart lama
     if(sektorChart){
         sektorChart.destroy();
         sektorChart = null;
     }
 
-    // ================= EMPTY =================
     if(rows.length <= 1){
         canvas.style.display = "none";
         empty.style.display = "flex";
@@ -2255,13 +2191,12 @@ function updateSektorChart(){
             }
         }
 
-        // 🔥 SELAIN YANG DIATAS = NEW SEGMENT
+        
         if(!matched){
             segmentTotals["New Segment"]++;
         }
     });
 
-    // ================= ACTIVE SEGMENTS =================
     const activeSegments = Object.keys(segmentTotals)
         .filter(seg => segmentTotals[seg] > 0);
 
@@ -2273,7 +2208,6 @@ function updateSektorChart(){
         return;
     }
 
-    // ================= SEMUA SEKTOR UNIK =================
     const sektorList = [];
 
     rows.slice(1).forEach(row => {
@@ -2290,16 +2224,12 @@ function updateSektorChart(){
             sektorList.push(sektor);
         }
     });
-
-    // ================= INIT DATASET =================
     let datasetMap = {};
 
     sektorList.forEach(sektor => {
         datasetMap[sektor] =
             new Array(activeSegments.length).fill(0);
     });
-
-    // ================= MAPPING DATA =================
     rows.slice(1).forEach(row => {
 
         let sektor = (row[3] || "")
@@ -2312,7 +2242,6 @@ function updateSektorChart(){
 
             let matched = false;
 
-            // 🔥 CEK SEMUA MASTER CATEGORY
             for(let segment in segmentMap){
 
                 const sektorLower = sektor.toLowerCase();
@@ -2332,7 +2261,6 @@ function updateSektorChart(){
                 }
             }
 
-            // 🔥 FALLBACK NEW SEGMENT
             if(!matched && seg === "New Segment"){
 
                 datasetMap[sektor][i]++;
@@ -2376,7 +2304,6 @@ function updateSektorChart(){
 
     const ctx = canvas.getContext("2d");
 
-    // 🔥 fade out dulu
     canvas.style.opacity = 0;
 
     sektorChart = new Chart(ctx,{
@@ -2440,7 +2367,6 @@ function updateSektorChart(){
         }
     });
 
-    // 🔥 fade in
     setTimeout(() => {
 
         canvas.style.transition = "opacity 0.4s ease";
@@ -2461,13 +2387,10 @@ function updatePieSourceChart() {
 
     if (!canvas) return;
 
-    // 🔥 destroy lama
     if (pieSourceChart) {
         pieSourceChart.destroy();
         pieSourceChart = null;
     }
-
-    // ================= EMPTY =================
     if (rows.length <= 1) {
         canvas.style.display = "none";
         empty.style.display = "flex";
@@ -2491,7 +2414,6 @@ function updatePieSourceChart() {
     const labels = Object.keys(sourceCount);
     const values = Object.values(sourceCount);
 
-    // 🔥 DEBUG (WAJIB CEK)
     console.log("PIE:", labels, values);
 
     if (labels.length === 0) {
@@ -2532,14 +2454,14 @@ function updatePieSourceChart() {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        boxWidth: 10,     // 🔥 kecilin kotak
-                        boxHeight: 10,    // 🔥 bikin square (penting!)
-                        padding: 12,      // jarak antar item
+                        boxWidth: 10,    
+                        boxHeight: 10,   
+                        padding: 12,     
 
                         color: "#4e6b50",
 
                         font: {
-                            size: 10      // 🔥 kecilin font
+                            size: 10     
                         }
                     }
                 }
@@ -2565,14 +2487,12 @@ function updateTreemapWilayahSektor() {
         treemapChart = null;
     }
 
-    // ================= EMPTY =================
     if (!rows || rows.length <= 1) {
         canvas.style.display = "none";
         empty.style.display = "flex";
         return;
     }
 
-    // ================= GROUP =================
     const map = {};
 
     rows.slice(1).forEach(row => {
@@ -2588,7 +2508,6 @@ function updateTreemapWilayahSektor() {
         map[region][sektor]++;
     });
 
-    // ================= TOP REGION =================
     let regionTotals = Object.keys(map).map(r => ({
         region: r,
         total: Object.values(map[r]).reduce((a, b) => a + b, 0)
@@ -2598,13 +2517,10 @@ function updateTreemapWilayahSektor() {
     regionTotals.sort((a, b) => b.total - a.total);
 
     const topRegions = regionTotals.slice(0, 3).map(r => r.region);
-
-    // ================= WARNA =================
     const colors = ["#4e6b50", "#f28c52", "#5a78e0"];
     const regionColor = {};
     topRegions.forEach((r,i)=> regionColor[r] = colors[i]);
 
-    // ================= FLATTEN =================
     const data = [];
 
     topRegions.forEach(region => {
@@ -2618,20 +2534,16 @@ function updateTreemapWilayahSektor() {
         });
     });
 
-    // ================= EMPTY AFTER FILTER =================
     if (data.length === 0) {
         canvas.style.display = "none";
         empty.style.display = "flex";
         return;
     }
 
-    // ================= SHOW =================
     canvas.style.display = "block";
     empty.style.display = "none";
 
     const ctx = canvas.getContext("2d");
-
-    // 🔥 fade out
     canvas.style.opacity = 0;
 
     treemapChart = new Chart(ctx, {
@@ -2711,7 +2623,7 @@ function updateTreemapWilayahSektor() {
                     position: "bottom",
                     labels: {
                         boxWidth: 10,
-                        boxHeight: 10, // 🔥 square
+                        boxHeight: 10, 
                         font: { size: 10 },
 
                         generateLabels() {
@@ -2739,7 +2651,6 @@ function updateTreemapWilayahSektor() {
         }
     });
 
-    // 🔥 fade in
     setTimeout(() => {
         canvas.style.transition = "opacity 0.4s ease";
         canvas.style.opacity = 1;
@@ -2749,7 +2660,7 @@ function updateTreemapWilayahSektor() {
 function animateCounter(element, target, duration = 800){
 
     let start = 0;
-    const increment = target / (duration / 16); // 60fps
+    const increment = target / (duration / 16); 
     let current = 0;
 
     function update(){
@@ -2789,17 +2700,12 @@ function updateKPI(){
             .toLowerCase()
             .trim();
 
-        // 🔥 SKIP "-"
         if(progress === "-" || progress === ""){
             return;
         }
-
-        // 🔥 LOST
         if(progress.includes("lost")){
             lost++;
         }
-
-        // 🔥 SELAIN LOST = DALAM PROSES
         else{
             proses++;
         }
@@ -2822,14 +2728,11 @@ function updateProdukChart(){
     const empty = document.getElementById("produkEmpty");
 
     if (!canvas) return;
-
-    // 🔥 destroy chart lama
     if(produkChart){
         produkChart.destroy();
         produkChart = null;
     }
 
-    // ================= EMPTY DATA =================
     if(rows.length <= 1){
         canvas.style.display = "none";
         empty.style.display = "flex";
@@ -2852,7 +2755,6 @@ function updateProdukChart(){
         produkCount[produk] = (produkCount[produk] || 0) + 1;
     });
 
-    // ================= EMPTY SETELAH FILTER =================
     if(Object.keys(produkCount).length === 0){
         canvas.style.display = "none";
         empty.style.display = "flex";
@@ -4289,14 +4191,12 @@ function processExcelData(rows){
 
                 sektorValue = getVal(row, colIndex.industry);
             }
-
-            // ================= NORMALISASI SEKTOR =================
+            
             const sektorLower = sektorValue
                 .toString()
                 .toLowerCase()
                 .trim();
 
-            // 🔥 semua agent/agen jadi reseller
             if (
                 sektorLower.includes("agen") ||
                 sektorLower.includes("agent")
@@ -4311,11 +4211,7 @@ function processExcelData(rows){
 
                 nama: getVal(row, colIndex.nama),
                 region: getVal(row, colIndex.region),
-
-                // 🔥 hasil final sektor
                 sektor: sektorValue,
-
-                // 🔥 STATUS SEKARANG AMAN
                 status: colIndex.status === -1
                     ? "-"
                     : getVal(row, colIndex.status),
@@ -4325,8 +4221,6 @@ function processExcelData(rows){
                 source: getVal(row, colIndex.source),
                 notelp: getVal(row, colIndex.notelp),
                 produk: getVal(row, colIndex.produk),
-
-                // 🔥 PROGRESS AMBIL DARI ACT STATUS
                 progress: getVal(row, colIndex.progress)
             };
         });
@@ -4388,11 +4282,8 @@ async function sendBulkData(data, reset=false){
 
         alert("Import berhasil 🚀");
 
-        // 🔥 HAPUS CACHE
         const key = `${currentName}_${currentMonth}`;
         delete dataCache[key];
-
-        // 🔥 RELOAD DATA DARI SERVER
         await loadMonth(currentMonth);
 
     }
@@ -4455,8 +4346,6 @@ function openAddModal() {
         div.style.marginBottom = "10px";
 
         let inputField = "";
-
-        // ================= SEKTOR =================
         if (col === "Sektor") {
             inputField = `
                 <select id="input_${col}" style="width:100%; padding:6px; margin-top:4px; border:1px solid #ddd; border-radius:6px;">
